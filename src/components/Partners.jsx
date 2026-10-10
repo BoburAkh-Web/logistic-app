@@ -1,62 +1,72 @@
-import React from "react";
-import { Zoom, Slide } from "react-awesome-reveal";
+import { PARTNERS } from "../lib/data";
+import { Counter, FadeUp, MaskIcon, RevealWords } from "./ui/primitives";
 
-const Partners = () => {
-  const logos = [
-    "./images/amazon_logo.svg",
-    "./images/dell_logo.svg",
-    "./images/dhl_logo.svg",
-    "./images/electric_ab_logo.svg",
-    "./images/fedex_logo.svg",
-    "./images/harley_logo.svg",
-    "./images/hunt_logo.svg",
-    "./images/knight_logo.svg",
-    "./images/pepsi_logo.svg",
-    "",
-    "./images/swift_logo.svg",
-    "./images/toyota_logo.svg",
-    "",
-    "",
-    "./images/ups_logo.svg",
-  ];
+function LogoRow({ items, reverse = false, duration = "45s" }) {
   return (
-    <div
-      className="bg-primaryClr mt-[200px] pb-[90px] tablet-extra:mt-14 tablet:mt-[100px]"
-      id="partners"
-    >
-      <div className="flex justify-between container mx-auto tablet-extra:flex-col mobile-extra:items-center">
-        <div className="mt-[120px] mobile-mini:mt-[30px] flex flex-col tablet-extra:items-center tablet-extra:justify-center">
-          <Zoom top cascade>
-            <h1 className="max-w-[100%] text-[40px] text-white mb-5 font-bold tablet-extra:text-[35px] tablet-extra:text-center mobile:text-[30px]">
-              Customers and Partners
-            </h1>
-          </Zoom>
-          <Slide direction="left" duration={2000}>
-            <p className="max-w-[400px] pr-[20px] text-white text-[18px] tablet-extra:text-[16px] tablet-extra:text-center">
-              We cooperate with companies all over the US, Canada and Mexico.
-              80% of our clients have been working with us for over 10 years
-            </p>
-          </Slide>
-        </div>
-        <div className="grid grid-cols-3 grid-flow-row gap-[30px] place-items-end mt-[100px] w-fit mr-[100px] tablet-extra:flex tablet-extra:flex-wrap tablet-extra:justify-center tablet-mini:place-items-center tablet-mini:mr-0 mobile:mt-[50px] mobile-mini:pb-10">
-          {logos.map((item, index) => {
-            return (
-              <div key={index}>
-                <div className="hover:animate-pulse tablet-mini:hidden">
-                  <Zoom direction="right" cascade>
-                    <img src={item} alt="" />
-                  </Zoom>
-                </div>
-                <div className="hidden hover:animate-pulse tablet-mini:block">
-                  <img src={item} alt="" />
-                </div>
-              </div>
-            );
-          })}
-        </div>
+    <div className="fade-x group flex overflow-hidden">
+      <div
+        className="animate-marquee flex w-max shrink-0 gap-4 pr-4 group-hover:[animation-play-state:paused]"
+        style={{
+          "--marquee-duration": duration,
+          animationDirection: reverse ? "reverse" : "normal",
+        }}
+      >
+        {[...items, ...items].map((p, i) => (
+          <div
+            key={i}
+            aria-hidden={i >= items.length}
+            className="grid h-24 w-48 shrink-0 place-items-center rounded-2xl border border-line bg-card text-fg/55 transition-colors duration-500 hover:border-brand hover:text-brand md:h-28 md:w-56"
+          >
+            <MaskIcon src={p.logo} className="h-10 w-28 md:h-12 md:w-32" />
+            <span className="sr-only">{p.name}</span>
+          </div>
+        ))}
       </div>
     </div>
   );
-};
+}
 
-export default Partners;
+export default function Partners() {
+  const half = Math.ceil(PARTNERS.length / 2);
+  return (
+    <section id="partners" className="relative overflow-hidden py-28 md:py-40">
+      <div className="container-x grid gap-10 lg:grid-cols-[1.4fr_1fr] lg:items-end">
+        <div>
+          <span className="eyebrow">(04) Customers &amp; partners</span>
+          <h2 className="mt-6 font-display text-[clamp(2.75rem,6vw,6.25rem)] font-semibold leading-[0.92] tracking-[-0.04em]">
+            <RevealWords text="Trusted by the names that move the world." highlight={[5, 6, 7]} />
+          </h2>
+        </div>
+        <FadeUp delay={0.2} className="lg:ml-auto lg:max-w-md">
+          <p className="text-lg text-muted">
+            We cooperate with companies all over the US, Canada and Mexico — and most of
+            them never leave.
+          </p>
+          <div className="mt-8 flex gap-10">
+            <div>
+              <p className="font-display text-5xl font-semibold tracking-tight">
+                <Counter to={80} suffix="%" />
+              </p>
+              <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.16em] text-muted">
+                Clients 10+ years
+              </p>
+            </div>
+            <div>
+              <p className="font-display text-5xl font-semibold tracking-tight">
+                <Counter to={PARTNERS.length} suffix="+" />
+              </p>
+              <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.16em] text-muted">
+                Household names
+              </p>
+            </div>
+          </div>
+        </FadeUp>
+      </div>
+
+      <div className="mt-16 space-y-4 md:mt-24">
+        <LogoRow items={PARTNERS.slice(0, half)} duration="40s" />
+        <LogoRow items={PARTNERS.slice(half)} duration="48s" reverse />
+      </div>
+    </section>
+  );
+}

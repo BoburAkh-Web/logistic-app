@@ -1,3 +1,259 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@import "lenis/dist/lenis.css";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme {
+  --color-brand: #0057ff;
+  --color-brand-600: #0047d6;
+  --color-brand-400: #3d7bff;
+  --color-paper: #f8f7f4;
+  --color-ink: #0a0c11;
+
+  --font-display: "Bricolage Grotesque Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+
+  --animate-marquee: marquee var(--marquee-duration, 40s) linear infinite;
+  --animate-float: float 14s ease-in-out infinite;
+  --animate-ping-slow: ping-slow 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @keyframes float {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+    33% {
+      transform: translate3d(-6%, 8%, 0) scale(1.08);
+    }
+    66% {
+      transform: translate3d(5%, -4%, 0) scale(0.95);
+    }
+  }
+  @keyframes ping-slow {
+    0% {
+      transform: scale(1);
+      opacity: 0.7;
+    }
+    100% {
+      transform: scale(2.6);
+      opacity: 0;
+    }
+  }
+}
+
+/* Theme-aware semantic colors */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-card: var(--card);
+  --color-elev: var(--elev);
+}
+
+:root {
+  --bg: #f8f7f4;
+  --fg: #0a0c11;
+  --muted: #5b5f6b;
+  --line: rgb(10 12 17 / 0.1);
+  --card: #ffffff;
+  --elev: #efede7;
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --bg: #07080c;
+  --fg: #f8f7f4;
+  --muted: #9a9eab;
+  --line: rgb(248 247 244 / 0.1);
+  --card: #0e1016;
+  --elev: #151821;
+  color-scheme: dark;
+}
+
+@layer base {
+  html {
+    background: var(--bg);
+    color: var(--fg);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-brand) transparent;
+  }
+  html.is-locked {
+    overflow: hidden;
+  }
+  body {
+    font-family: var(--font-sans);
+    overflow-x: clip;
+    min-height: 100svh;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    text-wrap: balance;
+  }
+  ::selection {
+    background: var(--color-brand);
+    color: #fff;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+  @media (pointer: fine) {
+    html.has-cursor,
+    html.has-cursor a,
+    html.has-cursor button,
+    html.has-cursor label {
+      cursor: none;
+    }
+  }
+}
+
+@layer components {
+  .container-x {
+    width: 100%;
+    max-width: 1440px;
+    margin-inline: auto;
+    padding-inline: clamp(1rem, 4vw, 3rem);
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .eyebrow::before {
+    content: "";
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 999px;
+    background: var(--color-brand);
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--color-brand) 18%, transparent);
+  }
+
+  /* Single-color SVGs from /public recolored via CSS mask → follows currentColor */
+  .mask-icon {
+    display: inline-block;
+    background-color: currentColor;
+    -webkit-mask: var(--icon) center / contain no-repeat;
+    mask: var(--icon) center / contain no-repeat;
+  }
+
+  /* Card whose border + surface light up around the pointer */
+  .spotlight {
+    position: relative;
+    isolation: isolate;
+  }
+  .spotlight::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.4s;
+    background: radial-gradient(
+      420px circle at var(--mx, 50%) var(--my, 50%),
+      color-mix(in oklab, var(--color-brand) 16%, transparent),
+      transparent 45%
+    );
+    z-index: -1;
+  }
+  .spotlight:hover::before {
+    opacity: 1;
+  }
+
+  .grid-bg {
+    background-image:
+      linear-gradient(to right, var(--line) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--line) 1px, transparent 1px);
+    background-size: 72px 72px;
+  }
+
+  .text-outline {
+    color: transparent;
+    -webkit-text-stroke: 1.5px currentColor;
+  }
+  .text-outline-fg {
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--fg);
+  }
+
+  .fade-x {
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+    mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+  }
+
+  .grain {
+    position: fixed;
+    inset: -50%;
+    width: 200%;
+    height: 200%;
+    pointer-events: none;
+    z-index: 70;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    animation: grain 8s steps(10) infinite;
+  }
+  [data-theme="dark"] .grain {
+    opacity: 0.07;
+  }
+  @keyframes grain {
+    0%,
+    100% {
+      transform: translate(0, 0);
+    }
+    20% {
+      transform: translate(-5%, 4%);
+    }
+    40% {
+      transform: translate(4%, -6%);
+    }
+    60% {
+      transform: translate(-3%, 7%);
+    }
+    80% {
+      transform: translate(6%, -2%);
+    }
+  }
+}
+
+/* Circular theme-switch reveal via the View Transitions API */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .grain {
+    animation: none;
+  }
+}
