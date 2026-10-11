@@ -27,7 +27,7 @@ function useActiveSection() {
   return active;
 }
 
-export function ThemeToggle({ className = "" }) {
+export function ThemeToggle({ className = "size-10" }) {
   const { theme, toggle } = useTheme();
   const dark = theme === "dark";
   return (
@@ -35,7 +35,7 @@ export function ThemeToggle({ className = "" }) {
       type="button"
       onClick={toggle}
       aria-label={`Switch to ${dark ? "light" : "dark"} theme`}
-      className={`relative grid size-10 place-items-center overflow-hidden rounded-full border border-line text-fg transition-colors hover:border-brand hover:text-brand ${className}`}
+      className={`relative grid place-items-center overflow-hidden rounded-full border border-line text-fg transition-colors hover:border-brand hover:text-brand ${className}`}
     >
       <AnimatePresence mode="wait" initial={false}>
         <motion.span
@@ -102,7 +102,7 @@ export default function Nav() {
       >
         <nav
           aria-label="Primary"
-          className={`mx-auto flex max-w-6xl items-center justify-between gap-4 rounded-full border py-2 pl-5 pr-2 transition-all duration-500 ${
+          className={`mx-auto flex max-w-6xl items-center justify-between gap-4 rounded-full border py-1.5 pl-4 pr-1.5 transition-all duration-500 sm:py-2 sm:pl-5 sm:pr-2 ${
             scrolled || open
               ? "border-line bg-bg/85 shadow-[0_10px_40px_-12px_rgb(0_0_0/0.18)] backdrop-blur-md"
               : "border-transparent bg-transparent"
@@ -134,26 +134,29 @@ export default function Nav() {
           </ul>
 
           <div className="flex items-center gap-2">
-            <ThemeToggle />
-            <Magnetic className="hidden sm:inline-block">
-              <a
-                href="#contact"
-                onClick={(e) => go(e, "#contact")}
-                className="group flex items-center gap-2 rounded-full bg-brand py-2.5 pl-5 pr-2.5 text-sm font-medium text-white transition-colors hover:bg-brand-600"
-              >
-                <RollText>Get a quote</RollText>
-                <span className="grid size-6 place-items-center rounded-full bg-white text-brand transition-transform duration-500 group-hover:rotate-45">
-                  <ArrowUpRight className="size-3.5" />
-                </span>
-              </a>
-            </Magnetic>
+            <ThemeToggle className="size-11 lg:size-10" />
+            {/* Magnetic always renders inline-block, so the breakpoint lives on a wrapper. */}
+            <div className="hidden sm:block">
+              <Magnetic>
+                <a
+                  href="#contact"
+                  onClick={(e) => go(e, "#contact")}
+                  className="group flex items-center gap-2 rounded-full bg-brand py-2.5 pl-5 pr-2.5 text-sm font-medium text-white transition-colors hover:bg-brand-600"
+                >
+                  <RollText>Get a quote</RollText>
+                  <span className="grid size-6 place-items-center rounded-full bg-white text-brand transition-transform duration-500 group-hover:rotate-45">
+                    <ArrowUpRight className="size-3.5" />
+                  </span>
+                </a>
+              </Magnetic>
+            </div>
             <button
               type="button"
               onClick={() => setOpen((o) => !o)}
               aria-expanded={open}
               aria-controls="mobile-menu"
               aria-label={open ? "Close menu" : "Open menu"}
-              className="relative grid size-10 place-items-center rounded-full bg-fg text-bg lg:hidden"
+              className="relative grid size-11 place-items-center rounded-full bg-fg text-bg lg:hidden"
             >
               <span
                 className={`absolute h-[1.5px] w-4 bg-current transition-transform duration-500 ${
@@ -174,10 +177,10 @@ export default function Nav() {
         {open && (
           <motion.div
             id="mobile-menu"
-            className="fixed inset-0 z-40 flex flex-col justify-between bg-bg px-6 pb-10 pt-28 lg:hidden"
-            initial={{ clipPath: "circle(0% at calc(100% - 44px) 40px)" }}
-            animate={{ clipPath: "circle(150% at calc(100% - 44px) 40px)" }}
-            exit={{ clipPath: "circle(0% at calc(100% - 44px) 40px)" }}
+            className="fixed inset-0 z-40 flex flex-col justify-between overflow-y-auto bg-bg px-6 pb-8 pt-24 lg:hidden"
+            initial={{ clipPath: "circle(0% at calc(100% - 42px) 38px)" }}
+            animate={{ clipPath: "circle(150% at calc(100% - 42px) 38px)" }}
+            exit={{ clipPath: "circle(0% at calc(100% - 42px) 38px)" }}
             transition={{ duration: 0.8, ease: EASE_IN_OUT }}
           >
             <ul className="space-y-1">
@@ -186,7 +189,10 @@ export default function Nav() {
                   <motion.a
                     href={link.href}
                     onClick={(e) => go(e, link.href)}
-                    className="flex items-baseline gap-4 font-display text-[clamp(2.75rem,12vw,5rem)] font-semibold leading-[1.05] tracking-tight"
+                    aria-current={active === link.href ? "true" : undefined}
+                    className={`flex items-baseline gap-4 py-0.5 font-display text-[clamp(2.5rem,11.5vw,5rem)] font-semibold leading-[1.05] tracking-tight ${
+                      active === link.href ? "text-brand" : ""
+                    }`}
                     initial={{ y: "100%" }}
                     animate={{ y: 0 }}
                     exit={{ y: "100%" }}
@@ -199,18 +205,31 @@ export default function Nav() {
               ))}
             </ul>
             <motion.div
-              className="space-y-1 border-t border-line pt-6 text-sm text-muted"
+              className="mt-10 space-y-6"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              transition={{ delay: 0.5, duration: 0.6 }}
+              transition={{ delay: 0.45, duration: 0.6 }}
             >
-              <a href={CONTACT.phoneHref} className="block text-lg text-fg">
-                {CONTACT.phone}
+              <a
+                href="#contact"
+                onClick={(e) => go(e, "#contact")}
+                className="flex h-14 items-center justify-between rounded-full bg-brand pl-6 pr-2 font-medium text-white"
+              >
+                Get a quote
+                <span className="grid size-10 place-items-center rounded-full bg-white text-brand">
+                  <ArrowUpRight />
+                </span>
               </a>
-              <a href={`mailto:${CONTACT.email}`} className="block">
-                {CONTACT.email}
-              </a>
+              <div className="flex flex-col gap-1 border-t border-line pt-5 text-sm text-muted">
+                <a href={CONTACT.phoneHref} className="text-lg font-medium text-fg">
+                  {CONTACT.phone}
+                </a>
+                <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+                <span className="mt-2 font-mono text-[10px] uppercase tracking-[0.16em]">
+                  Dispatch open 24/7/365
+                </span>
+              </div>
             </motion.div>
           </motion.div>
         )}

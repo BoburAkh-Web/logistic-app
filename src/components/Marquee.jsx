@@ -28,7 +28,7 @@ const wrap = (min, max, v) => {
 };
 
 /** Infinite band whose speed and direction follow scroll velocity. */
-function VelocityBand({ baseVelocity, className, outline = false }) {
+function VelocityBand({ baseVelocity, className }) {
   const reduce = useReducedMotion();
   const ref = useRef(null);
   const inView = useInView(ref, { margin: "100px 0px" });
@@ -58,11 +58,7 @@ function VelocityBand({ baseVelocity, className, outline = false }) {
           <span key={copy} className="flex shrink-0 items-center" aria-hidden={copy > 0}>
             {WORDS.map((w) => (
               <span key={w} className="flex items-center">
-                <span
-                  className={`px-6 font-display text-[clamp(2.5rem,7vw,6.5rem)] font-semibold uppercase leading-none tracking-[-0.03em] md:px-10 ${
-                    outline ? "text-outline" : ""
-                  }`}
-                >
+                <span className="px-6 font-display text-[clamp(2.5rem,7vw,6.5rem)] font-semibold uppercase leading-none tracking-[-0.03em] md:px-10">
                   {w}
                 </span>
                 <Spark className="size-[clamp(1.25rem,3vw,2.75rem)] shrink-0" />
@@ -77,16 +73,14 @@ function VelocityBand({ baseVelocity, className, outline = false }) {
 
 export default function Marquee() {
   return (
-    <section aria-label="What we move" className="relative py-16 md:py-28">
+    <section aria-label="What we move" className="relative overflow-x-clip py-10 md:py-28">
       <div className="relative z-10 left-1/2 w-[112vw] -translate-x-1/2 -rotate-3 shadow-[0_30px_60px_-20px_rgb(0_87_255/0.5)]">
         <VelocityBand baseVelocity={-3.5} className="bg-brand py-5 text-white md:py-7" />
       </div>
-      <div className="relative left-1/2 -mt-4 w-[112vw] -translate-x-1/2 rotate-2 md:-mt-6">
-        <VelocityBand
-          baseVelocity={2.5}
-          outline
-          className="border-y border-line bg-bg py-5 text-fg md:py-7"
-        />
+      <div className="relative left-1/2 mt-3 w-[112vw] -translate-x-1/2 rotate-2 md:-mt-6">
+        {/* Inverted fill rather than outlined text: stroking a variable font exposes
+            its overlapping glyph contours as stray lines inside the letters. */}
+        <VelocityBand baseVelocity={2.5} className="bg-fg py-5 text-bg md:py-7" />
       </div>
     </section>
   );

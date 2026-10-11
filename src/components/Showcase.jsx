@@ -84,7 +84,7 @@ export default function Showcase() {
     <section id="solutions" ref={section} className="relative overflow-clip">
       <div
         ref={track}
-        className="flex flex-col gap-5 px-[clamp(1rem,4vw,3rem)] py-24 lg:h-[100svh] lg:w-max lg:flex-row lg:items-center lg:gap-[3vw] lg:py-0"
+        className="flex flex-col gap-10 px-[clamp(1rem,4vw,3rem)] py-16 lg:h-[100svh] lg:w-max lg:flex-row lg:items-center lg:gap-[3vw] lg:py-0"
       >
         {/* intro panel */}
         <div className="flex shrink-0 flex-col justify-center lg:w-[38vw] lg:pr-[2vw]">
@@ -102,61 +102,65 @@ export default function Showcase() {
           </span>
         </div>
 
-        {SOLUTIONS.map((s, i) => (
-          <article
-            key={s.title}
-            data-cursor="Drive"
-            className="sc-panel group sticky top-(--stack) h-[78svh] w-full shrink-0 overflow-hidden rounded-[2rem] bg-ink text-paper lg:relative lg:top-0 lg:h-[74svh] lg:w-[min(72vw,1080px)]"
-            style={{ "--stack": `calc(6rem + ${i * 14}px)` }}
-          >
-            <img
-              src={s.image}
-              alt=""
-              loading="eager"
-              decoding="async"
-              className="sc-img absolute inset-0 h-full w-full scale-[1.12] object-cover transition-[filter] duration-700 group-hover:brightness-110"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-ink/10" />
-            <div className="absolute inset-0 bg-gradient-to-r from-ink/70 to-transparent" />
+        {/* Own wrapper on mobile so the sticky stack releases at the last card instead of
+            sliding over the closing panel; `lg:contents` dissolves it for the desktop track. */}
+        <div className="flex flex-col gap-5 lg:contents">
+          {SOLUTIONS.map((s, i) => (
+            <article
+              key={s.title}
+              data-cursor="Drive"
+              className="sc-panel group sticky top-(--stack) h-[78svh] w-full shrink-0 overflow-hidden rounded-[2rem] bg-ink text-paper lg:relative lg:top-0 lg:h-[74svh] lg:w-[min(72vw,1080px)]"
+              style={{ "--stack": `calc(6rem + ${i * 14}px)` }}
+            >
+              <img
+                src={s.image}
+                alt=""
+                loading="eager"
+                decoding="async"
+                className="sc-img absolute inset-0 h-full w-full scale-[1.12] object-cover transition-[filter] duration-700 group-hover:brightness-110"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-ink/10" />
+              <div className="absolute inset-0 bg-gradient-to-r from-ink/70 to-transparent" />
 
-            <div className="relative flex h-full flex-col justify-between p-6 md:p-10 lg:p-14">
-              <div className="flex items-start justify-between">
-                <span className="font-mono text-xs tracking-[0.2em] text-paper/70">
-                  {String(i + 1).padStart(2, "0")} / {String(SOLUTIONS.length).padStart(2, "0")}
-                </span>
-                <span className="grid size-12 place-items-center rounded-full border border-paper/25 bg-ink/40 transition-all duration-500 group-hover:rotate-45 group-hover:border-brand group-hover:bg-brand">
-                  <ArrowUpRight className="size-5" />
-                </span>
-              </div>
+              <div className="relative flex h-full flex-col justify-between p-5 sm:p-6 md:p-10 lg:p-14">
+                <div className="flex items-start justify-between">
+                  <span className="font-mono text-xs tracking-[0.2em] text-paper/70">
+                    {String(i + 1).padStart(2, "0")} / {String(SOLUTIONS.length).padStart(2, "0")}
+                  </span>
+                  <span className="grid size-12 place-items-center rounded-full border border-paper/25 bg-ink/40 transition-all duration-500 group-hover:rotate-45 group-hover:border-brand group-hover:bg-brand">
+                    <ArrowUpRight className="size-5" />
+                  </span>
+                </div>
 
-              <div>
-                <div className="overflow-hidden pb-2">
-                  <h3 className="sc-reveal font-display text-[clamp(2.5rem,7vw,7.5rem)] font-semibold leading-[0.9] tracking-[-0.04em]">
-                    {s.title}
-                  </h3>
-                </div>
-                <div className="mt-5 grid gap-6 md:grid-cols-[1fr_auto] md:items-end">
-                  <p className="max-w-xl text-sm leading-relaxed text-paper/75 md:text-base">
-                    {s.description}
-                  </p>
-                  <ul className="flex flex-wrap gap-2">
-                    {s.tags.map((t) => (
-                      <li
-                        key={t}
-                        className="rounded-full border border-paper/20 bg-ink/50 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em]"
-                      >
-                        {t}
-                      </li>
-                    ))}
-                  </ul>
+                <div>
+                  <div className="overflow-hidden pb-2">
+                    <h3 className="sc-reveal font-display text-[clamp(2.5rem,7vw,7.5rem)] font-semibold leading-[0.9] tracking-[-0.04em]">
+                      {s.title}
+                    </h3>
+                  </div>
+                  <div className="mt-5 grid gap-6 md:grid-cols-[1fr_auto] md:items-end">
+                    <p className="max-w-xl text-sm leading-relaxed text-paper/75 md:text-base">
+                      {s.description}
+                    </p>
+                    <ul className="flex flex-wrap gap-2">
+                      {s.tags.map((t) => (
+                        <li
+                          key={t}
+                          className="rounded-full border border-paper/20 bg-ink/50 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em]"
+                        >
+                          {t}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
               </div>
-            </div>
-          </article>
-        ))}
+            </article>
+          ))}
+        </div>
 
         {/* closing panel */}
-        <div className="sc-panel flex shrink-0 flex-col items-start justify-center gap-6 py-10 lg:w-[34vw] lg:pl-[2vw]">
+        <div className="sc-panel flex shrink-0 flex-col items-start justify-center gap-6 lg:w-[34vw] lg:py-10 lg:pl-[2vw]">
           <p className="font-display text-[clamp(2rem,3.6vw,3.75rem)] font-semibold leading-[0.95] tracking-[-0.03em]">
             Something else on the road? <span className="text-brand">Let’s talk.</span>
           </p>

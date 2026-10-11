@@ -25,7 +25,7 @@ function useDeferredMount(delay = 900) {
 }
 
 const STATS = [
-  { k: "US · CA · MX", v: "Coverage" },
+  { k: "US · CA · MX", v: "Coverage" },
   { k: "24/7/365", v: "Live dispatch" },
   { k: "10+ yrs", v: "Client partnerships" },
 ];
@@ -49,7 +49,7 @@ export default function Hero() {
     <section
       id="top"
       ref={ref}
-      className="relative flex min-h-[100svh] flex-col overflow-hidden pt-28 md:pt-36"
+      className="relative flex min-h-[100svh] flex-col overflow-hidden pt-24 md:pt-36"
     >
       {/* backdrop */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
@@ -61,7 +61,7 @@ export default function Hero() {
 
       <motion.div
         style={{ y: globeY }}
-        className="pointer-events-none absolute left-1/2 top-[52%] aspect-square w-[150vw] -translate-x-1/2 opacity-60 sm:w-[115vw] md:opacity-80 lg:left-auto lg:right-[-14vw] lg:top-[-2vh] lg:w-[min(68vw,1100px)] lg:translate-x-0 lg:opacity-100"
+        className="pointer-events-none absolute left-1/2 top-[64%] aspect-square w-[150vw] -translate-x-1/2 opacity-50 sm:top-[52%] sm:w-[115vw] sm:opacity-60 md:opacity-80 lg:left-auto lg:right-[-14vw] lg:top-[-2vh] lg:w-[min(68vw,1100px)] lg:translate-x-0 lg:opacity-100"
       >
         {showGlobe && (
           <Suspense fallback={null}>
@@ -82,7 +82,7 @@ export default function Hero() {
         className="container-x relative z-10 flex flex-1 flex-col"
       >
         <motion.div {...appear(0.1)} className="mb-8 md:mb-10">
-          <span className="inline-flex items-center gap-3 rounded-full border border-line bg-bg/85 py-1.5 pl-2 pr-4 text-xs">
+          <span className="inline-flex items-center gap-2 rounded-full border border-line bg-bg/85 py-1.5 pl-2 pr-3 text-[11px] sm:gap-3 sm:pr-4 sm:text-xs">
             <span className="relative grid size-5 place-items-center">
               <span className="animate-ping-slow absolute size-2 rounded-full bg-emerald-500" />
               <span className="size-2 rounded-full bg-emerald-500" />
@@ -95,7 +95,7 @@ export default function Hero() {
           </span>
         </motion.div>
 
-        <h1 className="max-w-[14ch] font-display text-[clamp(3.1rem,9.6vw,10.5rem)] font-semibold leading-[0.88] tracking-[-0.045em]">
+        <h1 className="font-display text-[clamp(2.5rem,11.2vw,4.75rem)] font-semibold leading-[0.88] tracking-[-0.045em] md:max-w-[14ch] md:text-[clamp(3.1rem,9.6vw,10.5rem)]">
           <RevealWords text="A thousand miles" delay={0.15} className="block" />
           <RevealWords text="of our success" delay={0.3} className="block" />
           <span className="block">
@@ -128,7 +128,7 @@ export default function Hero() {
           </span>
         </h1>
 
-        <div className="mt-10 flex flex-col gap-8 md:mt-14 md:flex-row md:items-end md:justify-between">
+        <div className="mt-8 flex flex-col gap-7 md:mt-14 md:flex-row md:items-end md:justify-between md:gap-8">
           <motion.p
             {...appear(0.9)}
             className="max-w-md text-base leading-relaxed text-muted md:text-lg"
@@ -137,8 +137,8 @@ export default function Hero() {
             the right place, at the right time. <span className="text-fg">Always.</span>
           </motion.p>
 
-          <motion.div {...appear(1.05)} className="flex flex-wrap items-center gap-3">
-            <Magnetic>
+          <motion.div {...appear(1.05)} className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+            <Magnetic className="w-full sm:w-auto">
               <a
                 href="#contact"
                 data-cursor="Quote"
@@ -146,7 +146,7 @@ export default function Hero() {
                   e.preventDefault();
                   scrollToTarget("#contact");
                 }}
-                className="group flex items-center gap-3 rounded-full bg-brand py-3 pl-7 pr-3 text-base font-medium text-white shadow-[0_20px_50px_-15px_rgb(0_87_255/0.7)] transition-colors hover:bg-brand-600"
+                className="group flex w-full items-center justify-between gap-3 rounded-full bg-brand py-3 pl-7 pr-3 text-base font-medium text-white sm:w-auto sm:justify-start shadow-[0_20px_50px_-15px_rgb(0_87_255/0.7)] transition-colors hover:bg-brand-600"
               >
                 <RollText>Get a quote</RollText>
                 <span className="grid size-9 place-items-center rounded-full bg-white text-brand transition-transform duration-500 group-hover:rotate-45">
@@ -154,14 +154,14 @@ export default function Hero() {
                 </span>
               </a>
             </Magnetic>
-            <Magnetic>
+            <Magnetic className="w-full sm:w-auto">
               <a
                 href="#solutions"
                 onClick={(e) => {
                   e.preventDefault();
                   scrollToTarget("#solutions");
                 }}
-                className="group flex items-center gap-3 rounded-full border border-line bg-bg/85 px-6 py-3.5 text-base font-medium transition-colors hover:border-fg"
+                className="group flex w-full items-center justify-center gap-3 rounded-full border border-line bg-bg/85 px-6 py-3.5 text-base font-medium transition-colors hover:border-fg sm:w-auto"
               >
                 <RollText>Explore solutions</RollText>
                 <ArrowRight className="size-4 transition-transform duration-500 group-hover:translate-x-1" />
@@ -172,13 +172,14 @@ export default function Hero() {
 
         <motion.div
           {...appear(1.25)}
-          className="mt-auto flex items-end justify-between gap-6 border-t border-line pb-6 pt-6 md:pb-8"
+          // Phones: a card, so the globe behind it doesn't cut through the numbers.
+          className="mb-5 mt-auto flex items-end justify-between gap-6 rounded-2xl border border-line bg-bg/85 p-4 md:mb-0 md:rounded-none md:border-x-0 md:border-b-0 md:bg-transparent md:px-0 md:pb-8 md:pt-6"
         >
-          <dl className="grid grid-cols-3 gap-6 md:gap-14">
+          <dl className="grid w-full grid-cols-3 gap-3 sm:gap-6 md:w-auto md:gap-14">
             {STATS.map((s) => (
               <div key={s.v}>
                 <dt className="sr-only">{s.v}</dt>
-                <dd className="font-display text-lg font-semibold tracking-tight md:text-2xl">
+                <dd className="whitespace-nowrap font-display text-[15px] font-semibold tracking-tight sm:text-lg md:text-2xl">
                   {s.k}
                 </dd>
                 <dd className="mt-1 font-mono text-[10px] uppercase tracking-[0.16em] text-muted md:text-[11px]">

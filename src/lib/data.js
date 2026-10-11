@@ -117,7 +117,7 @@ export const PARTNERS = [
   { name: "Amazon", logo: "/images/amazon_logo.svg" },
   { name: "Dell", logo: "/images/dell_logo.svg" },
   { name: "DHL", logo: "/images/dhl_logo.svg" },
-  { name: "Electric AB", logo: "/images/electric_ab_logo.svg" },
+  { name: "Schneider Electric", logo: "/images/electric_ab_logo.svg" },
   { name: "FedEx", logo: "/images/fedex_logo.svg" },
   { name: "Harley-Davidson", logo: "/images/harley_logo.svg" },
   { name: "J.B. Hunt", logo: "/images/hunt_logo.svg" },

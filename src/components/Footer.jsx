@@ -15,7 +15,7 @@ function Wordmark() {
     <div
       ref={ref}
       aria-hidden
-      className="flex select-none justify-between overflow-hidden font-display text-[clamp(4.5rem,21.5vw,24rem)] font-bold leading-[0.78] tracking-[-0.06em]"
+      className="flex select-none justify-between overflow-hidden pb-[0.06em] pr-[0.04em] font-display text-[clamp(4.5rem,21.5vw,24rem)] font-bold leading-[0.78] tracking-[-0.06em]"
     >
       {WORDMARK.map((ch, i) =>
         ch === " " ? (
@@ -36,24 +36,46 @@ function Wordmark() {
   );
 }
 
+function BackToTop({ className = "" }) {
+  return (
+    <Magnetic>
+      <button
+        type="button"
+        onClick={() => scrollToTarget(0)}
+        aria-label="Back to top"
+        data-cursor="Top"
+        className={`group grid place-items-center rounded-full border border-line transition-colors duration-500 hover:border-brand hover:bg-brand hover:text-white ${className}`}
+      >
+        <ArrowUp className="size-5 transition-transform duration-500 group-hover:-translate-y-1 md:size-6" />
+      </button>
+    </Magnetic>
+  );
+}
+
 export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="relative overflow-hidden pt-24 md:pt-32">
+    <footer className="relative overflow-hidden pt-16 md:pt-32">
       <div className="container-x">
-        <div className="grid gap-12 border-b border-line pb-16 md:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_auto]">
-          <div>
-            <Logo className="h-12" />
-            <p className="mt-6 max-w-sm text-muted">
-              Your top-notch expedited service provider. The right equipment, at the right
-              place, at the right time. Always.
-            </p>
+        <div className="grid grid-cols-1 gap-10 border-b border-line pb-12 md:grid-cols-2 md:gap-12 md:pb-16 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_minmax(0,1fr)_auto]">
+          <div className="flex items-start justify-between gap-6">
+            <div>
+              <Logo className="h-10 md:h-12" />
+              <p className="mt-5 max-w-sm text-muted md:mt-6">
+                Your top-notch expedited service provider. The right equipment, at the
+                right place, at the right time. Always.
+              </p>
+            </div>
+            {/* On phones/tablets the back-to-top button sits beside the brand block. */}
+            <div className="shrink-0 lg:hidden">
+              <BackToTop className="size-14" />
+            </div>
           </div>
 
           <nav aria-label="Footer">
             <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">Explore</p>
-            <ul className="mt-5 space-y-2">
+            <ul className="mt-4 flex flex-wrap gap-x-6 gap-y-2 md:mt-5 md:block md:space-y-2">
               {NAV_LINKS.map((l) => (
                 <li key={l.href}>
                   <a
@@ -62,7 +84,7 @@ export default function Footer() {
                       e.preventDefault();
                       scrollToTarget(l.href);
                     }}
-                    className="group inline-flex text-lg"
+                    className="group inline-flex text-base md:text-lg"
                   >
                     <RollText>{l.label}</RollText>
                   </a>
@@ -71,39 +93,29 @@ export default function Footer() {
             </ul>
           </nav>
 
-          <div>
+          <div className="min-w-0">
             <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">Reach us</p>
-            <ul className="mt-5 space-y-2 text-lg">
+            <ul className="mt-4 space-y-2 text-base md:mt-5 md:text-lg">
               <li>
                 <a href={CONTACT.phoneHref} className="group inline-flex">
                   <RollText>{CONTACT.phone}</RollText>
                 </a>
               </li>
               <li>
-                <a href={`mailto:${CONTACT.email}`} className="group inline-flex">
+                <a href={`mailto:${CONTACT.email}`} className="group inline-flex max-w-full">
                   <RollText>{CONTACT.email}</RollText>
                 </a>
               </li>
-              <li className="text-base text-muted">{CONTACT.address}</li>
+              <li className="text-sm text-muted md:text-base">{CONTACT.address}</li>
             </ul>
           </div>
 
-          <div className="flex items-start lg:justify-end">
-            <Magnetic>
-              <button
-                type="button"
-                onClick={() => scrollToTarget(0)}
-                aria-label="Back to top"
-                data-cursor="Top"
-                className="group grid size-24 place-items-center rounded-full border border-line transition-colors duration-500 hover:border-brand hover:bg-brand hover:text-white"
-              >
-                <ArrowUp className="size-6 transition-transform duration-500 group-hover:-translate-y-1" />
-              </button>
-            </Magnetic>
+          <div className="hidden items-start justify-end lg:flex">
+            <BackToTop className="size-24" />
           </div>
         </div>
 
-        <div className="flex flex-col gap-3 py-6 font-mono text-[11px] uppercase tracking-[0.14em] text-muted md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-col gap-2.5 py-6 font-mono text-[10px] uppercase tracking-[0.14em] text-muted sm:text-[11px] md:flex-row md:items-center md:justify-between md:gap-3">
           <p>© {year} EZ Trans Group. All rights reserved.</p>
           <p className="flex items-center gap-2">
             <span className="size-1.5 rounded-full bg-emerald-500" />

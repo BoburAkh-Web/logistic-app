@@ -89,6 +89,10 @@
     text-rendering: optimizeLegibility;
     scrollbar-width: thin;
     scrollbar-color: var(--color-brand) transparent;
+    /* With html's own overflow set, it (not body's) propagates to the viewport, so
+       body's `overflow-x: clip` below really clips. Otherwise anything wider than the
+       screen makes mobile browsers widen the layout viewport and zoom the page out. */
+    overflow-x: hidden;
   }
   html.is-locked {
     overflow: hidden;
@@ -190,13 +194,14 @@
     background-size: 72px 72px;
   }
 
-  .text-outline {
-    color: transparent;
-    -webkit-text-stroke: 1.5px currentColor;
-  }
-  .text-outline-fg {
-    color: transparent;
-    -webkit-text-stroke: 1.5px var(--fg);
+  /* Browser autofill paints inputs light-yellow/white — keep the dark contact form intact. */
+  .field-input:-webkit-autofill,
+  .field-input:-webkit-autofill:hover,
+  .field-input:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--color-paper);
+    caret-color: var(--color-paper);
+    box-shadow: 0 0 0 1000px #17191e inset;
+    transition: background-color 9999s ease-out;
   }
 
   .fade-x {

@@ -139,7 +139,7 @@ function CountriesCard() {
         <Counter to={3} />
       </p>
       <p className="mt-3 text-muted">countries, one network.</p>
-      <svg viewBox="0 0 200 40" className="mt-6 w-full text-brand" aria-hidden>
+      <svg viewBox="0 -12 200 56" className="mt-4 w-full text-brand" aria-hidden>
         <motion.path
           d="M10 30 C 60 0, 140 0, 190 30"
           fill="none"
@@ -234,14 +234,14 @@ function ValuesCard() {
 
 export default function About() {
   return (
-    <section id="about" className="relative py-28 md:py-40">
+    <section id="about" className="relative py-20 md:py-40">
       <div className="container-x">
         <span className="eyebrow">(02) Why EZ Trans</span>
         <div className="mt-8">
           <Manifesto />
         </div>
 
-        <div className="mt-20 grid gap-4 md:mt-28 lg:grid-cols-12">
+        <div className="mt-14 grid grid-cols-1 gap-4 md:mt-28 lg:grid-cols-12">
           <DispatchCard />
           <LoyaltyCard />
           <CountriesCard />

@@ -23,31 +23,31 @@ function ServiceCard({ item, index }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "0px 0px -8% 0px" }}
       transition={{ duration: 1, ease: EASE_OUT, delay: (index % 4) * 0.08 }}
-      className="group relative isolate flex min-h-[300px] flex-col justify-between overflow-hidden bg-bg p-7 md:p-8"
+      className="group relative isolate flex min-h-[210px] flex-col justify-between overflow-hidden bg-bg p-4 sm:min-h-[260px] sm:p-6 md:min-h-[300px] md:p-8"
     >
       <span
         aria-hidden
-        className="absolute inset-0 -z-10 bg-brand transition-[clip-path] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] [clip-path:circle(0%_at_var(--fx,50%)_var(--fy,50%))] group-hover:[clip-path:circle(150%_at_var(--fx,50%)_var(--fy,50%))]"
+        className="absolute inset-0 -z-10 bg-brand transition-[clip-path] duration-700 ease-out-expo [clip-path:circle(0%_at_var(--fx,50%)_var(--fy,50%))] group-hover:[clip-path:circle(150%_at_var(--fx,50%)_var(--fy,50%))]"
       />
       <div className="flex items-start justify-between">
-        <span className="font-mono text-xs text-muted transition-colors duration-500 group-hover:text-white/70">
+        <span className="font-mono text-[10px] text-muted transition-colors duration-500 group-hover:text-white/70 sm:text-xs">
           /{String(index + 1).padStart(2, "0")}
         </span>
-        <span className="grid size-9 place-items-center rounded-full border border-line transition-all duration-500 group-hover:rotate-45 group-hover:border-white/40 group-hover:text-white">
-          <ArrowUpRight className="size-4" />
+        <span className="grid size-7 place-items-center rounded-full border border-line transition-all sm:size-9 duration-500 group-hover:rotate-45 group-hover:border-white/40 group-hover:text-white">
+          <ArrowUpRight className="size-3.5 sm:size-4" />
         </span>
       </div>
 
       <MaskIcon
         src={item.icon}
-        className="my-8 size-16 text-brand transition-all duration-700 group-hover:-rotate-6 group-hover:scale-110 group-hover:text-white"
+        className="my-5 size-11 text-brand transition-all sm:my-8 sm:size-16 duration-700 group-hover:-rotate-6 group-hover:scale-110 group-hover:text-white"
       />
 
       <div>
-        <h3 className="font-display text-2xl font-semibold tracking-tight transition-colors duration-500 group-hover:text-white">
+        <h3 className="font-display text-base font-semibold leading-tight tracking-tight transition-colors duration-500 group-hover:text-white sm:text-xl md:text-2xl">
           {item.title}
         </h3>
-        <p className="mt-2 text-sm text-muted transition-colors duration-500 group-hover:text-white/80">
+        <p className="mt-1.5 text-xs leading-snug text-muted transition-colors duration-500 group-hover:text-white/80 sm:mt-2 sm:text-sm">
           {item.text}
         </p>
       </div>
@@ -57,9 +57,9 @@ function ServiceCard({ item, index }) {
 
 export default function Services() {
   return (
-    <section id="services" className="relative py-28 md:py-40">
+    <section id="services" className="relative py-20 md:py-40">
       <div className="container-x">
-        <div className="grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:items-end">
+        <div className="grid grid-cols-1 gap-6 md:gap-8 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] lg:items-end">
           <div>
             <span className="eyebrow">(03) Capabilities</span>
             <h2 className="mt-6 font-display text-[clamp(2.75rem,6vw,6.25rem)] font-semibold leading-[0.92] tracking-[-0.04em]">
@@ -67,14 +67,14 @@ export default function Services() {
             </h2>
           </div>
           <FadeUp delay={0.2}>
-            <p className="max-w-md text-lg text-muted lg:ml-auto">
+            <p className="max-w-md text-base text-muted md:text-lg lg:ml-auto">
               One partner from pickup to proof of delivery. Mix and match services to
               build the exact lane your cargo needs.
             </p>
           </FadeUp>
         </div>
 
-        <div className="mt-16 grid gap-px overflow-hidden rounded-[1.75rem] border border-line bg-line sm:grid-cols-2 lg:grid-cols-4 md:mt-20">
+        <div className="mt-12 grid grid-cols-2 gap-px overflow-hidden rounded-3xl border border-line bg-line md:mt-20 md:rounded-[1.75rem] lg:grid-cols-4">
           {SERVICES.map((item, i) => (
             <ServiceCard key={item.title} item={item} index={i} />
           ))}
