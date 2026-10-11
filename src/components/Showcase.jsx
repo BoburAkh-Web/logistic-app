@@ -112,7 +112,8 @@ export default function Showcase() {
             <img
               src={s.image}
               alt=""
-              loading="lazy"
+              loading="eager"
+              decoding="async"
               className="sc-img absolute inset-0 h-full w-full scale-[1.12] object-cover transition-[filter] duration-700 group-hover:brightness-110"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-ink/10" />

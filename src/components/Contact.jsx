@@ -131,7 +131,7 @@ export default function Contact() {
         <motion.div
           aria-hidden
           style={{ x: glowX, y: glowY }}
-          className="pointer-events-none absolute left-0 top-0 -z-10 size-[600px] rounded-full bg-[radial-gradient(closest-side,rgb(0_87_255/0.45),transparent)] will-change-transform"
+          className="pointer-events-none absolute left-0 top-0 -z-10 size-[600px] rounded-full bg-[radial-gradient(closest-side,rgb(0_87_255/0.45),transparent)]"
         />
         <div aria-hidden className="grid-bg absolute inset-0 -z-10 opacity-40 [--line:rgb(248_247_244/0.06)] [mask-image:radial-gradient(ellipse_at_top_left,#000,transparent_70%)]" />
 

@@ -84,7 +84,7 @@ export function RevealWords({
           className="inline-block overflow-hidden pb-[0.12em] -mb-[0.12em] align-bottom"
         >
           <motion.span
-            className={`inline-block will-change-transform ${
+            className={`inline-block ${
               highlight.includes(i) ? "text-brand" : ""
             } ${wordClassName}`}
             initial={{ y: "110%", rotate: 4 }}
@@ -168,16 +168,18 @@ export const spotlightHandlers = {
   },
 };
 
+// Constructing Intl formatters is expensive — build it once, not on every tick.
+const chicagoFormatter = new Intl.DateTimeFormat("en-US", {
+  timeZone: "America/Chicago",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+  hour12: false,
+});
+
 /** Current time in Wheeling, IL (dispatch HQ). */
 export function useChicagoTime() {
-  const format = () =>
-    new Intl.DateTimeFormat("en-US", {
-      timeZone: "America/Chicago",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
-    }).format(new Date());
+  const format = () => chicagoFormatter.format(new Date());
   const [time, setTime] = useState(format);
   useEffect(() => {
     const id = setInterval(() => setTime(format()), 1000);

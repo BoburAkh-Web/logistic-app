@@ -63,7 +63,7 @@ export default function Cursor() {
       style={{ opacity: state.visible ? 1 : 0 }}
     >
       <motion.div
-        className="absolute left-0 top-0 size-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white mix-blend-difference"
+        className="absolute left-0 top-0 size-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand"
         style={{ x, y }}
       />
       <motion.div

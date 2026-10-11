@@ -301,6 +301,9 @@ export default function Globe({ dark, className = "" }) {
           dpr={lowPower ? 1 : Math.min(window.devicePixelRatio, 1.25)}
           gl={{ antialias: !lowPower, alpha: true, powerPreference: "high-performance" }}
           frameloop={visible ? "always" : "never"}
+          // Don't re-measure on scroll: the wrapper moves with parallax, which made R3F
+          // call setSize (reallocating the WebGL buffer) on every scroll frame.
+          resize={{ scroll: false, debounce: { scroll: 0, resize: 200 } }}
           style={{ pointerEvents: "none" }}
         >
           <Scene dark={dark} pointer={pointer} lowPower={lowPower} />

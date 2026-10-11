@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { AnimatePresence, motion, useScroll, useTransform } from "motion/react";
+import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "motion/react";
 import { VALUES } from "../lib/data";
 import { ArrowUpRight } from "./ui/icons";
 import {
@@ -13,31 +13,35 @@ const MANIFESTO =
   "EZ Trans is built around one obsession — your supply chain. We move cargo safely and to the highest standard, and we take care of every customer, because a reliable, loyal carrier changes everything. Right people. Right technology. Right equipment.";
 const ACCENT = new Set(["Right", "people.", "technology.", "equipment."]);
 
-function Word({ children, progress, range }) {
-  const opacity = useTransform(progress, range, [0.15, 1]);
-  return (
-    <motion.span
-      style={{ opacity }}
-      className={ACCENT.has(children) ? "text-brand" : undefined}
-    >
-      {children}{" "}
-    </motion.span>
-  );
-}
+const WORDS = MANIFESTO.split(" ");
 
+/**
+ * Words light up as you scroll. Only the count of lit words is tracked, so React
+ * re-renders once per word crossing instead of restyling every word on every frame;
+ * the fade itself is a CSS transition.
+ */
 function Manifesto() {
   const ref = useRef(null);
+  const [lit, setLit] = useState(0);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start 85%", "end 45%"] });
-  const words = MANIFESTO.split(" ");
+  useMotionValueEvent(scrollYProgress, "change", (p) => {
+    setLit(Math.round(p * WORDS.length));
+  });
+
   return (
     <p
       ref={ref}
       className="max-w-6xl font-display text-[clamp(1.75rem,4.2vw,4rem)] font-medium leading-[1.08] tracking-[-0.025em]"
     >
-      {words.map((w, i) => (
-        <Word key={i} progress={scrollYProgress} range={[i / words.length, (i + 1) / words.length]}>
-          {w}
-        </Word>
+      {WORDS.map((w, i) => (
+        <span
+          key={i}
+          className={`transition-opacity duration-500 ${i < lit ? "opacity-100" : "opacity-15"} ${
+            ACCENT.has(w) ? "text-brand" : ""
+          }`}
+        >
+          {w}{" "}
+        </span>
       ))}
     </p>
   );
