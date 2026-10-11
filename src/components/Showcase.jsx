@@ -123,7 +123,7 @@ export default function Showcase() {
                 <span className="font-mono text-xs tracking-[0.2em] text-paper/70">
                   {String(i + 1).padStart(2, "0")} / {String(SOLUTIONS.length).padStart(2, "0")}
                 </span>
-                <span className="grid size-12 place-items-center rounded-full border border-paper/25 backdrop-blur-md transition-all duration-500 group-hover:rotate-45 group-hover:border-brand group-hover:bg-brand">
+                <span className="grid size-12 place-items-center rounded-full border border-paper/25 bg-ink/40 transition-all duration-500 group-hover:rotate-45 group-hover:border-brand group-hover:bg-brand">
                   <ArrowUpRight className="size-5" />
                 </span>
               </div>
@@ -142,7 +142,7 @@ export default function Showcase() {
                     {s.tags.map((t) => (
                       <li
                         key={t}
-                        className="rounded-full border border-paper/20 bg-paper/5 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] backdrop-blur-md"
+                        className="rounded-full border border-paper/20 bg-ink/50 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em]"
                       >
                         {t}
                       </li>

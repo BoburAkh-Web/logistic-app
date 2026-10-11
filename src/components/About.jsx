@@ -6,7 +6,7 @@ import {
   Counter,
   EASE_OUT,
   spotlightHandlers,
-  useChicagoTime,
+  LiveClock,
 } from "./ui/primitives";
 
 const MANIFESTO =
@@ -14,11 +14,10 @@ const MANIFESTO =
 const ACCENT = new Set(["Right", "people.", "technology.", "equipment."]);
 
 function Word({ children, progress, range }) {
-  const opacity = useTransform(progress, range, [0.12, 1]);
-  const blur = useTransform(progress, range, ["blur(6px)", "blur(0px)"]);
+  const opacity = useTransform(progress, range, [0.15, 1]);
   return (
     <motion.span
-      style={{ opacity, filter: blur }}
+      style={{ opacity }}
       className={ACCENT.has(children) ? "text-brand" : undefined}
     >
       {children}{" "}
@@ -55,7 +54,6 @@ const card =
   "spotlight relative overflow-hidden rounded-[1.75rem] border border-line bg-card p-6 md:p-8";
 
 function DispatchCard() {
-  const time = useChicagoTime();
   return (
     <motion.div
       {...rise(0)}
@@ -97,7 +95,7 @@ function DispatchCard() {
         </p>
         <div className="mt-8 flex items-center justify-between border-t border-white/20 pt-5 font-mono text-xs uppercase tracking-[0.16em]">
           <span className="text-white/70">Wheeling, IL</span>
-          <span className="tabular-nums">{time}</span>
+          <LiveClock />
         </div>
       </div>
     </motion.div>

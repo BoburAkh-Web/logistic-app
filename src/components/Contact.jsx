@@ -131,7 +131,7 @@ export default function Contact() {
         <motion.div
           aria-hidden
           style={{ x: glowX, y: glowY }}
-          className="pointer-events-none absolute left-0 top-0 -z-10 size-[600px] rounded-full bg-brand/45 blur-[120px]"
+          className="pointer-events-none absolute left-0 top-0 -z-10 size-[600px] rounded-full bg-[radial-gradient(closest-side,rgb(0_87_255/0.45),transparent)] will-change-transform"
         />
         <div aria-hidden className="grid-bg absolute inset-0 -z-10 opacity-40 [--line:rgb(248_247_244/0.06)] [mask-image:radial-gradient(ellipse_at_top_left,#000,transparent_70%)]" />
 
@@ -181,7 +181,7 @@ export default function Contact() {
             <form
               ref={form}
               onSubmit={send}
-              className="rounded-[1.75rem] border border-paper/10 bg-paper/[0.04] p-6 backdrop-blur-xl md:p-10"
+              className="rounded-[1.75rem] border border-paper/10 bg-paper/[0.06] p-6 md:p-10"
             >
               <p className="font-display text-2xl font-semibold tracking-tight">Request a quote</p>
               <p className="mt-1 text-sm text-paper/50">We reply fast. Usually in minutes.</p>

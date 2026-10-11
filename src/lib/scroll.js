@@ -16,7 +16,7 @@ export function useSmoothScroll() {
   useEffect(() => {
     if (prefersReducedMotion()) return;
 
-    lenis = new Lenis({ lerp: 0.09, wheelMultiplier: 1, touchMultiplier: 1.4 });
+    lenis = new Lenis({ lerp: 0.12, wheelMultiplier: 1, touchMultiplier: 1.4 });
     lenis.on("scroll", ScrollTrigger.update);
     if (document.documentElement.classList.contains("is-locked")) lenis.stop();
 

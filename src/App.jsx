@@ -1,8 +1,6 @@
-import { useCallback, useState } from "react";
 import { MotionConfig, motion, useScroll, useSpring } from "motion/react";
 import { useSmoothScroll } from "./lib/scroll";
 import { ThemeProvider } from "./lib/theme";
-import Intro, { shouldPlayIntro } from "./components/Intro";
 import Cursor from "./components/Cursor";
 import Nav from "./components/Nav";
 import Hero from "./components/Hero";
@@ -27,22 +25,16 @@ function ScrollProgress() {
 }
 
 export default function App() {
-  const [showIntro, setShowIntro] = useState(shouldPlayIntro);
-  const [ready, setReady] = useState(() => !showIntro);
   useSmoothScroll();
-
-  const reveal = useCallback(() => setReady(true), []);
-  const done = useCallback(() => setShowIntro(false), []);
 
   return (
     <ThemeProvider>
       <MotionConfig reducedMotion="user">
-        {showIntro && <Intro onReveal={reveal} onDone={done} />}
         <Cursor />
         <ScrollProgress />
         <Nav />
         <main>
-          <Hero ready={ready} />
+          <Hero />
           <Marquee />
           <Showcase />
           <About />

@@ -185,3 +185,9 @@ export function useChicagoTime() {
   }, []);
   return time;
 }
+
+/** Ticking clock isolated in its own component so parents don't re-render every second. */
+export function LiveClock({ className = "" }) {
+  const time = useChicagoTime();
+  return <span className={`tabular-nums ${className}`}>{time}</span>;
+}

@@ -4,7 +4,7 @@ import { CONTACT, NAV_LINKS } from "../lib/data";
 import { scrollToTarget } from "../lib/scroll";
 import { Logo } from "./Nav";
 import { ArrowUp } from "./ui/icons";
-import { EASE_OUT, Magnetic, RollText, useChicagoTime } from "./ui/primitives";
+import { EASE_OUT, LiveClock, Magnetic, RollText } from "./ui/primitives";
 
 const WORDMARK = "EZ TRANS".split("");
 
@@ -38,7 +38,6 @@ function Wordmark() {
 
 export default function Footer() {
   const year = new Date().getFullYear();
-  const time = useChicagoTime();
 
   return (
     <footer className="relative overflow-hidden pt-24 md:pt-32">
@@ -108,7 +107,7 @@ export default function Footer() {
           <p>© {year} EZ Trans Group. All rights reserved.</p>
           <p className="flex items-center gap-2">
             <span className="size-1.5 rounded-full bg-emerald-500" />
-            Open 24/7/365 · Wheeling, IL {time}
+            Open 24/7/365 · Wheeling, IL <LiveClock />
           </p>
           <a
             href="https://t.me/boobur_akh"

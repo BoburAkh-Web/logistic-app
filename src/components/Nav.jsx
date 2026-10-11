@@ -104,7 +104,7 @@ export default function Nav() {
           aria-label="Primary"
           className={`mx-auto flex max-w-6xl items-center justify-between gap-4 rounded-full border py-2 pl-5 pr-2 transition-all duration-500 ${
             scrolled || open
-              ? "border-line bg-bg/70 shadow-[0_10px_40px_-12px_rgb(0_0_0/0.18)] backdrop-blur-xl"
+              ? "border-line bg-bg/85 shadow-[0_10px_40px_-12px_rgb(0_0_0/0.18)] backdrop-blur-md"
               : "border-transparent bg-transparent"
           }`}
         >

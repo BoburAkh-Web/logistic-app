@@ -31,9 +31,8 @@ function latLonToVec(lat, lon, r = RADIUS) {
   );
 }
 
-function DotSphere({ color }) {
+function DotSphere({ color, count }) {
   const geometry = useMemo(() => {
-    const count = 6000;
     const positions = new Float32Array(count * 3);
     const golden = Math.PI * (3 - Math.sqrt(5));
     for (let i = 0; i < count; i++) {
@@ -45,13 +44,13 @@ function DotSphere({ color }) {
     const g = new THREE.BufferGeometry();
     g.setAttribute("position", new THREE.BufferAttribute(positions, 3));
     return g;
-  }, []);
+  }, [count]);
 
   return (
     <>
       {/* depth-only occluder hides the far hemisphere's dots */}
       <mesh renderOrder={-1}>
-        <sphereGeometry args={[RADIUS * 0.985, 64, 64]} />
+        <sphereGeometry args={[RADIUS * 0.985, 32, 32]} />
         <meshBasicMaterial colorWrite={false} />
       </mesh>
       <points geometry={geometry}>
@@ -105,7 +104,7 @@ function Atmosphere({ color, strength }) {
 
   return (
     <mesh scale={1.06}>
-      <sphereGeometry args={[RADIUS, 64, 64]} />
+      <sphereGeometry args={[RADIUS, 48, 48]} />
       <shaderMaterial
         {...atmosphereShader}
         uniforms={uniforms}
@@ -116,8 +115,8 @@ function Atmosphere({ color, strength }) {
   );
 }
 
-const SEGMENTS = 72;
-const RADIAL = 6;
+const SEGMENTS = 48;
+const RADIAL = 4;
 
 /** A route that draws itself from the hub, then retracts, with a glowing head. */
 function Route({ to, color, offset, speed }) {
@@ -184,7 +183,7 @@ function Route({ to, color, offset, speed }) {
         <meshBasicMaterial color={color} transparent opacity={0.95} depthWrite={false} />
       </mesh>
       <mesh ref={headRef}>
-        <sphereGeometry args={[0.014, 12, 12]} />
+        <sphereGeometry args={[0.014, 8, 8]} />
         <meshBasicMaterial color={color} toneMapped={false} />
       </mesh>
     </group>
@@ -212,19 +211,20 @@ function Marker({ lat, lon, color, size = 1, phase = 0 }) {
   return (
     <group position={position} quaternion={quaternion}>
       <mesh>
-        <circleGeometry args={[0.012 * size, 24]} />
+        <circleGeometry args={[0.012 * size, 16]} />
         <meshBasicMaterial color={color} side={THREE.DoubleSide} />
       </mesh>
       <mesh ref={ring}>
-        <ringGeometry args={[0.014 * size, 0.019 * size, 32]} />
+        <ringGeometry args={[0.014 * size, 0.019 * size, 20]} />
         <meshBasicMaterial color={color} transparent side={THREE.DoubleSide} depthWrite={false} />
       </mesh>
     </group>
   );
 }
 
-function Scene({ dark, pointer }) {
+function Scene({ dark, pointer, lowPower }) {
   const group = useRef();
+  const cities = lowPower ? CITIES.slice(0, 6) : CITIES.slice(0, 10);
   const dotColor = dark ? "#F8F7F4" : "#0A0C11";
   const routeColor = dark ? "#3D7BFF" : "#0057FF";
 
@@ -240,13 +240,13 @@ function Scene({ dark, pointer }) {
 
   return (
     <group ref={group} rotation={[0.5, 0, 0]}>
-      <DotSphere color={dotColor} />
+      <DotSphere color={dotColor} count={lowPower ? 1600 : 2800} />
       <Atmosphere color={routeColor} strength={dark ? 0.9 : 0.55} />
-      {CITIES.map((c, i) => (
+      {cities.map((c, i) => (
         <Route key={i} to={c} color={routeColor} offset={i * 0.61} speed={0.85 + (i % 3) * 0.12} />
       ))}
       <Marker lat={HUB[0]} lon={HUB[1]} color={routeColor} size={1.8} />
-      {CITIES.map((c, i) => (
+      {cities.map((c, i) => (
         <Marker key={i} lat={c[0]} lon={c[1]} color={routeColor} phase={i * 0.37} />
       ))}
     </group>
@@ -263,10 +263,16 @@ class GlobeBoundary extends Component {
   }
 }
 
+const isLowPower = () =>
+  window.matchMedia("(max-width: 1023px), (pointer: coarse)").matches ||
+  (navigator.hardwareConcurrency ?? 8) <= 4 ||
+  (navigator.deviceMemory ?? 8) <= 4;
+
 export default function Globe({ dark, className = "" }) {
   const wrap = useRef(null);
   const pointer = useRef({ x: 0, y: 0 });
   const [visible, setVisible] = useState(true);
+  const [lowPower] = useState(isLowPower);
 
   useEffect(() => {
     const onMove = (e) => {
@@ -276,8 +282,12 @@ export default function Globe({ dark, className = "" }) {
     window.addEventListener("pointermove", onMove, { passive: true });
     const io = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting));
     io.observe(wrap.current);
+    // Pause rendering in background tabs.
+    const onVisibility = () => setVisible(!document.hidden);
+    document.addEventListener("visibilitychange", onVisibility);
     return () => {
       window.removeEventListener("pointermove", onMove);
+      document.removeEventListener("visibilitychange", onVisibility);
       io.disconnect();
     };
   }, []);
@@ -287,12 +297,13 @@ export default function Globe({ dark, className = "" }) {
       <GlobeBoundary>
         <Canvas
           camera={{ position: [0, 0, 3.1], fov: 38 }}
-          dpr={[1, 2]}
-          gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+          // The canvas is huge; capping DPR is the single biggest GPU saving.
+          dpr={lowPower ? 1 : Math.min(window.devicePixelRatio, 1.25)}
+          gl={{ antialias: !lowPower, alpha: true, powerPreference: "high-performance" }}
           frameloop={visible ? "always" : "never"}
           style={{ pointerEvents: "none" }}
         >
-          <Scene dark={dark} pointer={pointer} />
+          <Scene dark={dark} pointer={pointer} lowPower={lowPower} />
         </Canvas>
       </GlobeBoundary>
     </div>

@@ -2,6 +2,7 @@ import { useRef } from "react";
 import {
   motion,
   useAnimationFrame,
+  useInView,
   useMotionValue,
   useReducedMotion,
   useScroll,
@@ -29,6 +30,8 @@ const wrap = (min, max, v) => {
 /** Infinite band whose speed and direction follow scroll velocity. */
 function VelocityBand({ baseVelocity, className, outline = false }) {
   const reduce = useReducedMotion();
+  const ref = useRef(null);
+  const inView = useInView(ref, { margin: "100px 0px" });
   const baseX = useMotionValue(0);
   const { scrollY } = useScroll();
   const velocity = useVelocity(scrollY);
@@ -39,7 +42,7 @@ function VelocityBand({ baseVelocity, className, outline = false }) {
   const direction = useRef(1);
 
   useAnimationFrame((_, delta) => {
-    if (reduce) return;
+    if (reduce || !inView) return;
     let move = direction.current * baseVelocity * (delta / 1000);
     const f = factor.get();
     if (f < 0) direction.current = -1;
@@ -49,7 +52,7 @@ function VelocityBand({ baseVelocity, className, outline = false }) {
   });
 
   return (
-    <div className={`flex overflow-hidden whitespace-nowrap ${className}`}>
+    <div ref={ref} className={`flex overflow-hidden whitespace-nowrap ${className}`}>
       <motion.div className="flex shrink-0" style={{ x }}>
         {Array.from({ length: 4 }).map((_, copy) => (
           <span key={copy} className="flex shrink-0 items-center" aria-hidden={copy > 0}>
