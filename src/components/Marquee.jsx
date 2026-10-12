@@ -74,7 +74,7 @@ function VelocityBand({ baseVelocity, className }) {
 
 export default function Marquee() {
   return (
-    <section aria-label="What we move" className="relative overflow-x-clip py-10 md:py-28">
+    <section aria-label="What we move" className="cv-auto-mobile relative overflow-x-clip py-10 md:py-28">
       <div className="relative z-10 left-1/2 w-[112vw] -translate-x-1/2 -rotate-3 shadow-[0_30px_60px_-20px_rgb(0_87_255/0.5)]">
         <VelocityBand baseVelocity={-0.9} className="bg-brand py-5 text-white md:py-7" />
       </div>

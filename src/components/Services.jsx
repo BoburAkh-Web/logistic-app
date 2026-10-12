@@ -57,7 +57,7 @@ function ServiceCard({ item, index }) {
 
 export default function Services() {
   return (
-    <section id="services" className="relative py-20 md:py-40">
+    <section id="services" className="cv-auto relative py-20 md:py-40">
       <div className="container-x">
         <div className="grid grid-cols-1 gap-6 md:gap-8 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] lg:items-end">
           <div>

@@ -29,7 +29,7 @@ function LogoRow({ items, reverse = false, duration = "45s" }) {
 export default function Partners() {
   const half = Math.ceil(PARTNERS.length / 2);
   return (
-    <section id="partners" className="relative overflow-hidden py-20 md:py-40">
+    <section id="partners" className="cv-auto relative overflow-hidden py-20 md:py-40">
       <div className="container-x grid grid-cols-1 gap-8 md:gap-10 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] lg:items-end">
         <div>
           <span className="eyebrow">(04) Customers &amp; partners</span>

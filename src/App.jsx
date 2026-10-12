@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { MotionConfig, motion, useScroll, useSpring } from "motion/react";
 import { useSmoothScroll } from "./lib/scroll";
 import { ThemeProvider } from "./lib/theme";
@@ -24,6 +25,13 @@ function ScrollProgress() {
   );
 }
 
+/**
+ * Each below-the-fold section is its own Suspense boundary. With prerendered HTML,
+ * React hydrates the shell (nav + hero) first and then each boundary in a separate
+ * task, instead of one long main-thread block for the whole page.
+ */
+const Section = ({ children }) => <Suspense fallback={null}>{children}</Suspense>;
+
 export default function App() {
   useSmoothScroll();
 
@@ -35,14 +43,14 @@ export default function App() {
         <Nav />
         <main>
           <Hero />
-          <Marquee />
-          <Showcase />
-          <About />
-          <Services />
-          <Partners />
-          <Contact />
+          <Section><Marquee /></Section>
+          <Section><Showcase /></Section>
+          <Section><About /></Section>
+          <Section><Services /></Section>
+          <Section><Partners /></Section>
+          <Section><Contact /></Section>
         </main>
-        <Footer />
+        <Section><Footer /></Section>
         <div aria-hidden className="grain" />
       </MotionConfig>
     </ThemeProvider>

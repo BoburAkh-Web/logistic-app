@@ -56,7 +56,7 @@ export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="relative overflow-hidden pt-16 md:pt-32">
+    <footer className="cv-auto relative overflow-hidden pt-16 md:pt-32">
       <div className="container-x">
         <div className="grid grid-cols-1 gap-10 border-b border-line pb-12 md:grid-cols-2 md:gap-12 md:pb-16 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_minmax(0,1fr)_auto]">
           <div className="flex items-start justify-between gap-6">
@@ -116,7 +116,8 @@ export default function Footer() {
         </div>
 
         <div className="flex flex-col gap-2.5 py-6 font-mono text-[10px] uppercase tracking-[0.14em] text-muted sm:text-[11px] md:flex-row md:items-center md:justify-between md:gap-3">
-          <p>© {year} EZ Trans Group. All rights reserved.</p>
+          {/* Year is baked in at build time; tolerate a mismatch across New Year. */}
+          <p suppressHydrationWarning>© {year} EZ Trans Group. All rights reserved.</p>
           <p className="flex items-center gap-2">
             <span className="size-1.5 rounded-full bg-emerald-500" />
             Open 24/7/365 · Wheeling, IL <LiveClock />

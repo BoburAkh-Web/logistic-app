@@ -27,27 +27,23 @@ function useActiveSection() {
   return active;
 }
 
+// Icons are switched by the `dark:` variant rather than React state, so the prerendered
+// HTML is right for every visitor before hydration (the theme lives in localStorage).
 export function ThemeToggle({ className = "size-10" }) {
-  const { theme, toggle } = useTheme();
-  const dark = theme === "dark";
+  const { toggle } = useTheme();
   return (
     <button
       type="button"
       onClick={toggle}
-      aria-label={`Switch to ${dark ? "light" : "dark"} theme`}
+      aria-label="Toggle dark mode"
       className={`relative grid place-items-center overflow-hidden rounded-full border border-line text-fg transition-colors hover:border-brand hover:text-brand ${className}`}
     >
-      <AnimatePresence mode="wait" initial={false}>
-        <motion.span
-          key={theme}
-          initial={{ y: 18, rotate: -90, opacity: 0 }}
-          animate={{ y: 0, rotate: 0, opacity: 1 }}
-          exit={{ y: -18, rotate: 90, opacity: 0 }}
-          transition={{ duration: 0.4, ease: EASE_OUT }}
-        >
-          {dark ? <Sun /> : <Moon />}
-        </motion.span>
-      </AnimatePresence>
+      <span className="absolute transition-all duration-500 ease-out-expo dark:translate-y-[-150%] dark:rotate-90 dark:opacity-0">
+        <Moon />
+      </span>
+      <span className="absolute translate-y-[150%] -rotate-90 opacity-0 transition-all duration-500 ease-out-expo dark:translate-y-0 dark:rotate-0 dark:opacity-100">
+        <Sun />
+      </span>
     </button>
   );
 }

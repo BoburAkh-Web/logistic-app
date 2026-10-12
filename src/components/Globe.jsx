@@ -268,7 +268,7 @@ const isLowPower = () =>
   (navigator.hardwareConcurrency ?? 8) <= 4 ||
   (navigator.deviceMemory ?? 8) <= 4;
 
-export default function Globe({ dark, className = "" }) {
+export default function Globe({ dark, className = "", onReady }) {
   const wrap = useRef(null);
   const pointer = useRef({ x: 0, y: 0 });
   const [visible, setVisible] = useState(true);
@@ -301,6 +301,7 @@ export default function Globe({ dark, className = "" }) {
           dpr={lowPower ? 1 : Math.min(window.devicePixelRatio, 1.25)}
           gl={{ antialias: !lowPower, alpha: true, powerPreference: "high-performance" }}
           frameloop={visible ? "always" : "never"}
+          onCreated={() => onReady?.()}
           // Don't re-measure on scroll: the wrapper moves with parallax, which made R3F
           // call setSize (reallocating the WebGL buffer) on every scroll frame.
           resize={{ scroll: false, debounce: { scroll: 0, resize: 200 } }}

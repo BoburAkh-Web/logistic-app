@@ -1,13 +1,7 @@
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import "@fontsource-variable/bricolage-grotesque";
-import "@fontsource-variable/inter";
-import "@fontsource-variable/jetbrains-mono";
-import "./index.css";
-import App from "./App";
+// Tiny entry: styles are linked from index.html (and inlined at build), and the app is
+// loaded only after the browser has painted the prerendered page, so first paint never
+// waits for JavaScript to download, evaluate or hydrate.
+const start = () => import("./boot").then((m) => m.boot());
 
-createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <App />
-  </StrictMode>
-);
+// rAF fires just before the next paint; the timeout inside it runs right after it.
+requestAnimationFrame(() => setTimeout(start, 0));

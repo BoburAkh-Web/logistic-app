@@ -5,11 +5,14 @@ const INTERACTIVE = "a, button, [data-cursor], input, textarea, label";
 
 /** Dot + trailing ring. Grows over interactive elements; shows `data-cursor` labels. */
 export default function Cursor() {
-  const [enabled] = useState(
-    () =>
+  // Decided after mount so the prerendered HTML and the first client render match.
+  const [enabled, setEnabled] = useState(false);
+  useEffect(() => {
+    setEnabled(
       window.matchMedia("(pointer: fine)").matches &&
-      !window.matchMedia("(prefers-reduced-motion: reduce)").matches
-  );
+        !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    );
+  }, []);
   const [state, setState] = useState({ hover: false, label: "", text: false, visible: false });
 
   const x = useMotionValue(-100);

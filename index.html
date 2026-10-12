@@ -17,6 +17,9 @@
     <meta property="og:type" content="website" />
     <meta property="og:image" content="/images/full_truck_load.jpg" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- Linked from HTML (not imported in JS) so no lazy chunk depends on it; the build
+         inlines it into a style tag. -->
+    <link rel="stylesheet" href="/src/index.css" />
     <script>
       (function () {
         var t = "light";

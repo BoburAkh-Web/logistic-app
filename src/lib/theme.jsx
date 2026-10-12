@@ -5,8 +5,10 @@ import { prefersReducedMotion } from "./scroll";
 const ThemeContext = createContext({ theme: "light", toggle: () => {} });
 
 export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState(
-    () => document.documentElement.dataset.theme || "light"
+  // The inline script in index.html sets data-theme before first paint; read it here.
+  // On the server (prerender) there's no document — markup never depends on this value.
+  const [theme, setTheme] = useState(() =>
+    typeof document === "undefined" ? "light" : document.documentElement.dataset.theme || "light"
   );
 
   useEffect(() => {

@@ -66,34 +66,49 @@ export function RevealWords({
   delay = 0,
   stagger = 0.06,
   duration = 1.1,
-  play,
+  instant = false,
   highlight = [],
 }) {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "0px 0px -12% 0px" });
-  const show = play === undefined ? inView : play && inView;
   const words = text.split(" ");
   const MotionTag = motion[Tag] ?? motion.span;
+  const wordClass = (i) =>
+    `inline-block ${highlight.includes(i) ? "text-brand" : ""} ${wordClassName}`;
 
   return (
-    <MotionTag ref={ref} className={className} aria-label={text}>
+    <MotionTag ref={ref} className={className}>
+      {/* Screen readers get the sentence once; the split words are presentational. */}
+      <span className="sr-only">{text}</span>
       {words.map((word, i) => (
         <span
           key={i}
           aria-hidden
-          className="inline-block overflow-hidden pb-[0.12em] -mb-[0.12em] align-bottom"
+          // The mask (overflow-hidden) is only for the scroll-triggered variant; the
+          // instant hero variant must stay paintable from the first frame.
+          className={`inline-block align-bottom ${instant ? "" : "overflow-hidden pb-[0.12em] -mb-[0.12em]"}`}
         >
-          <motion.span
-            className={`inline-block ${
-              highlight.includes(i) ? "text-brand" : ""
-            } ${wordClassName}`}
-            initial={{ y: "110%", rotate: 4 }}
-            animate={show ? { y: "0%", rotate: 0 } : undefined}
-            transition={{ duration, ease: EASE_OUT, delay: delay + i * stagger }}
-          >
-            {word}
-            {i < words.length - 1 ? " " : ""}
-          </motion.span>
+          {instant ? (
+            // Above-the-fold: a CSS animation runs from the prerendered HTML,
+            // so the headline doesn't wait for JavaScript.
+            <span
+              className={`reveal-word ${wordClass(i)}`}
+              style={{ animationDuration: `${duration}s`, animationDelay: `${delay + i * stagger}s` }}
+            >
+              {word}
+              {i < words.length - 1 ? " " : ""}
+            </span>
+          ) : (
+            <motion.span
+              className={wordClass(i)}
+              initial={{ y: "110%", rotate: 4 }}
+              animate={inView ? { y: "0%", rotate: 0 } : undefined}
+              transition={{ duration, ease: EASE_OUT, delay: delay + i * stagger }}
+            >
+              {word}
+              {i < words.length - 1 ? " " : ""}
+            </motion.span>
+          )}
         </span>
       ))}
     </MotionTag>
@@ -121,10 +136,15 @@ export function Counter({ to, duration = 2.2, suffix = "", prefix = "", classNam
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "0px 0px -10% 0px" });
   const reduce = useReducedMotion();
-  const [value, setValue] = useState(reduce ? to : 0);
+  // Always start at 0 so the prerendered HTML and the first client render agree.
+  const [value, setValue] = useState(0);
 
   useEffect(() => {
-    if (!inView || reduce) return;
+    if (!inView) return;
+    if (reduce) {
+      setValue(to);
+      return;
+    }
     const controls = animate(0, to, {
       duration,
       ease: EASE_OUT,
@@ -179,10 +199,12 @@ const chicagoFormatter = new Intl.DateTimeFormat("en-US", {
 
 /** Current time in Wheeling, IL (dispatch HQ). */
 export function useChicagoTime() {
-  const format = () => chicagoFormatter.format(new Date());
-  const [time, setTime] = useState(format);
+  // Placeholder until mount: the prerendered HTML can't know the visitor's current time.
+  const [time, setTime] = useState("--:--:--");
   useEffect(() => {
-    const id = setInterval(() => setTime(format()), 1000);
+    const tick = () => setTime(chicagoFormatter.format(new Date()));
+    tick();
+    const id = setInterval(tick, 1000);
     return () => clearInterval(id);
   }, []);
   return time;

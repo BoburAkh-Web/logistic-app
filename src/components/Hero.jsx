@@ -2,26 +2,44 @@ import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
 import { scrollToTarget } from "../lib/scroll";
 import { useTheme } from "../lib/theme";
+import GlobeLite from "./GlobeLite";
 import { ArrowRight, ArrowUpRight } from "./ui/icons";
 import { EASE_OUT, LiveClock, Magnetic, RevealWords, RollText } from "./ui/primitives";
 
 const Globe = lazy(() => import("./Globe"));
 
-/** Mount the WebGL globe only after the headline animation has had the main thread. */
-function useDeferredMount(delay = 900) {
-  const [mounted, setMounted] = useState(false);
+const WEBGL_QUERY = "(min-width: 1024px) and (pointer: fine) and (prefers-reduced-motion: no-preference)";
+
+/**
+ * Only capable desktops get the WebGL globe (three.js, ~240 KB gzip), and only once the
+ * page has loaded and the main thread is idle. Everyone else keeps the CSS/SVG globe.
+ */
+function useWebglGlobe() {
+  const [enabled, setEnabled] = useState(false);
   useEffect(() => {
+    const capable =
+      window.matchMedia(WEBGL_QUERY).matches &&
+      (navigator.hardwareConcurrency ?? 8) > 4 &&
+      (navigator.deviceMemory ?? 8) > 4;
+    if (!capable) return;
+
+    let timer;
     let idle;
-    const t = setTimeout(() => {
-      const ric = window.requestIdleCallback ?? ((cb) => setTimeout(cb, 1));
-      idle = ric(() => setMounted(true));
-    }, delay);
+    const ric = window.requestIdleCallback ?? ((cb) => setTimeout(cb, 1));
+    const start = () => {
+      timer = setTimeout(() => {
+        idle = ric(() => setEnabled(true), { timeout: 3000 });
+      }, 600);
+    };
+    if (document.readyState === "complete") start();
+    else window.addEventListener("load", start, { once: true });
     return () => {
-      clearTimeout(t);
+      window.removeEventListener("load", start);
+      clearTimeout(timer);
       (window.cancelIdleCallback ?? clearTimeout)(idle);
     };
-  }, [delay]);
-  return mounted;
+  }, []);
+  return enabled;
 }
 
 const STATS = [
@@ -30,20 +48,18 @@ const STATS = [
   { k: "10+ yrs", v: "Client partnerships" },
 ];
 
+/** CSS entrance (runs from the prerendered HTML, no JS needed). */
+const enter = (delay) => ({ animationDelay: `${delay}s` });
+
 export default function Hero() {
   const ref = useRef(null);
   const { theme } = useTheme();
-  const showGlobe = useDeferredMount();
+  const webgl = useWebglGlobe();
+  const [webglReady, setWebglReady] = useState(false);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
   const contentY = useTransform(scrollYProgress, [0, 1], [0, -120]);
   const contentOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
   const globeY = useTransform(scrollYProgress, [0, 1], [0, 160]);
-
-  const appear = (delay) => ({
-    initial: { opacity: 0, y: 24 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 1.1, ease: EASE_OUT, delay },
-  });
 
   return (
     <section
@@ -61,17 +77,25 @@ export default function Hero() {
 
       <motion.div
         style={{ y: globeY }}
-        className="pointer-events-none absolute left-1/2 top-[64%] aspect-square w-[150vw] -translate-x-1/2 opacity-50 sm:top-[52%] sm:w-[115vw] sm:opacity-60 md:opacity-80 lg:left-auto lg:right-[-14vw] lg:top-[-2vh] lg:w-[min(68vw,1100px)] lg:translate-x-0 lg:opacity-100"
+        className="pointer-events-none absolute left-1/2 top-[58%] aspect-square w-[150vw] -translate-x-1/2 opacity-50 sm:top-[52%] sm:w-[115vw] sm:opacity-60 md:opacity-80 lg:left-auto lg:right-[-14vw] lg:top-[-2vh] lg:w-[min(68vw,1100px)] lg:translate-x-0 lg:opacity-100"
       >
-        {showGlobe && (
+        {/* Fade lives on a wrapper: the entrance animation's fill would pin opacity. */}
+        <div className={`size-full transition-opacity duration-1000 ${webglReady ? "opacity-0" : ""}`}>
+          <GlobeLite className="size-full" />
+        </div>
+        {webgl && (
           <Suspense fallback={null}>
             <motion.div
-              className="size-full"
-              initial={{ opacity: 0, scale: 0.94 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 1.6, ease: EASE_OUT }}
+              className="absolute inset-0"
+              initial={{ opacity: 0, scale: 0.97 }}
+              animate={webglReady ? { opacity: 1, scale: 1 } : undefined}
+              transition={{ duration: 1.4, ease: EASE_OUT }}
             >
-              <Globe dark={theme === "dark"} className="size-full" />
+              <Globe
+                dark={theme === "dark"}
+                className="size-full"
+                onReady={() => setWebglReady(true)}
+              />
             </motion.div>
           </Suspense>
         )}
@@ -81,7 +105,7 @@ export default function Hero() {
         style={{ y: contentY, opacity: contentOpacity }}
         className="container-x relative z-10 flex flex-1 flex-col"
       >
-        <motion.div {...appear(0.1)} className="mb-8 md:mb-10">
+        <div className="enter-up mb-8 md:mb-10" style={enter(0.03)}>
           <span className="inline-flex items-center gap-2 rounded-full border border-line bg-bg/85 py-1.5 pl-2 pr-3 text-[11px] sm:gap-3 sm:pr-4 sm:text-xs">
             <span className="relative grid size-5 place-items-center">
               <span className="animate-ping-slow absolute size-2 rounded-full bg-emerald-500" />
@@ -93,51 +117,56 @@ export default function Hero() {
               Wheeling, IL · <LiveClock />
             </span>
           </span>
-        </motion.div>
+        </div>
 
         <h1 className="font-display text-[clamp(2.5rem,11.2vw,4.75rem)] font-semibold leading-[0.88] tracking-[-0.045em] md:max-w-[14ch] md:text-[clamp(3.1rem,9.6vw,10.5rem)]">
-          <RevealWords text="A thousand miles" delay={0.15} className="block" />
-          <RevealWords text="of our success" delay={0.3} className="block" />
+          <RevealWords instant text="A thousand miles" delay={0.03} stagger={0.04} duration={0.7} className="block" />
+          <RevealWords instant text="of our success" delay={0.1} stagger={0.04} duration={0.7} className="block" />
           <span className="block">
-            <RevealWords text="is" delay={0.45} />{" "}
+            <RevealWords instant text="is" delay={0.17} duration={0.7} />{" "}
             <span className="relative inline-block">
               <RevealWords
+                instant
                 text="your success."
-               
-                delay={0.51}
+                delay={0.2}
+                stagger={0.04}
+                duration={0.7}
                 wordClassName="text-brand"
               />
-              <motion.svg
+              <svg
                 viewBox="0 0 600 40"
                 preserveAspectRatio="none"
                 aria-hidden
                 className="absolute -bottom-[0.1em] left-0 h-[0.16em] w-full text-brand"
               >
-              <motion.path
-                d="M4 28C120 10 260 6 400 14s170 14 192 10"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="7"
-                strokeLinecap="round"
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: 1 }}
-                transition={{ duration: 1.4, ease: EASE_OUT, delay: 1.2 }}
-              />
-              </motion.svg>
+                <path
+                  d="M4 28C120 10 260 6 400 14s170 14 192 10"
+                  pathLength="1"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="7"
+                  strokeLinecap="round"
+                  className="draw-in"
+                  style={enter(0.5)}
+                />
+              </svg>
             </span>
           </span>
         </h1>
 
         <div className="mt-8 flex flex-col gap-7 md:mt-14 md:flex-row md:items-end md:justify-between md:gap-8">
-          <motion.p
-            {...appear(0.9)}
-            className="max-w-md text-base leading-relaxed text-muted md:text-lg"
+          <p
+            className="enter-up max-w-md text-base leading-relaxed text-muted md:text-lg"
+            style={enter(0.2)}
           >
             Your top-notch expedited service provider — with the right equipment, at
             the right place, at the right time. <span className="text-fg">Always.</span>
-          </motion.p>
+          </p>
 
-          <motion.div {...appear(1.05)} className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+          <div
+            className="enter-up flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center"
+            style={enter(0.28)}
+          >
             <Magnetic className="w-full sm:w-auto">
               <a
                 href="#contact"
@@ -167,13 +196,13 @@ export default function Hero() {
                 <ArrowRight className="size-4 transition-transform duration-500 group-hover:translate-x-1" />
               </a>
             </Magnetic>
-          </motion.div>
+          </div>
         </div>
 
-        <motion.div
-          {...appear(1.25)}
+        <div
           // Phones: a card, so the globe behind it doesn't cut through the numbers.
-          className="mb-5 mt-auto flex items-end justify-between gap-6 rounded-2xl border border-line bg-bg/85 p-4 md:mb-0 md:rounded-none md:border-x-0 md:border-b-0 md:bg-transparent md:px-0 md:pb-8 md:pt-6"
+          className="enter-up mb-5 mt-auto flex items-end justify-between gap-6 rounded-2xl border border-line bg-bg/85 p-4 md:mb-0 md:rounded-none md:border-x-0 md:border-b-0 md:bg-transparent md:px-0 md:pb-8 md:pt-6"
+          style={enter(0.35)}
         >
           <dl className="grid w-full grid-cols-3 gap-3 sm:gap-6 md:w-auto md:gap-14">
             {STATS.map((s) => (
@@ -191,14 +220,10 @@ export default function Hero() {
           <div className="hidden items-center gap-3 font-mono text-[11px] uppercase tracking-[0.18em] text-muted md:flex">
             Scroll
             <span className="relative h-10 w-px overflow-hidden bg-line">
-              <motion.span
-                className="absolute inset-x-0 top-0 h-1/2 bg-brand"
-                animate={{ y: ["-100%", "200%"] }}
-                transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-              />
+              <span className="scroll-cue absolute inset-x-0 top-0 h-1/2 bg-brand" />
             </span>
           </div>
-        </motion.div>
+        </div>
       </motion.div>
     </section>
   );

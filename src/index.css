@@ -1,5 +1,7 @@
 @import "tailwindcss";
 @import "lenis/dist/lenis.css";
+@import "@fontsource-variable/bricolage-grotesque/index.css";
+@import "@fontsource-variable/inter/index.css";
 
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
@@ -12,7 +14,7 @@
 
   --font-display: "Bricolage Grotesque Variable", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", "Roboto Mono", Menlo, Consolas, monospace;
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
@@ -220,6 +222,101 @@
   [data-theme="dark"] .grain {
     opacity: 0.07;
   }
+
+  /* Below-the-fold sections skip layout/paint until they near the viewport, so the
+     first layout only covers the hero. `auto` remembers the real size once rendered. */
+  .cv-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 1000px;
+  }
+  /* Same, below the desktop breakpoint only — on desktop these sections host the GSAP
+     pin, which needs real geometry from the start. */
+  @media (max-width: 1023px) {
+    .cv-auto-mobile {
+      content-visibility: auto;
+      contain-intrinsic-size: auto 2400px;
+    }
+  }
+  /* Anchor jumps need real geometry for every section in between (see scrollToTarget). */
+  html.cv-off .cv-auto,
+  html.cv-off .cv-auto-mobile {
+    content-visibility: visible;
+  }
+
+  /* Above-the-fold entrances are plain CSS so they run straight from the prerendered
+     HTML — the hero never waits for JavaScript to become visible. They start faint
+     rather than hidden (no opacity 0, no clip), so the content is painted in the very
+     first frame and Largest Contentful Paint lands with First Contentful Paint. */
+  .reveal-word {
+    animation: word-rise 1.1s var(--ease-out-expo) both;
+  }
+  .enter-up {
+    animation: enter-up 1s var(--ease-out-expo) both;
+  }
+  .draw-in {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: draw-in 1.3s var(--ease-out-expo) both;
+  }
+  @keyframes word-rise {
+    from {
+      opacity: 0.15;
+      transform: translateY(0.4em) rotate(3deg);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes enter-up {
+    from {
+      opacity: 0.15;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes draw-in {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  .scroll-cue {
+    animation: scroll-cue 1.8s ease-in-out infinite;
+  }
+  @keyframes scroll-cue {
+    from {
+      transform: translateY(-100%);
+    }
+    to {
+      transform: translateY(200%);
+    }
+  }
+
+  /* Lightweight CSS/SVG globe for phones, tablets and low-power devices (no WebGL). */
+  .globe-lite {
+    background:
+      radial-gradient(circle at 36% 28%, color-mix(in oklab, var(--color-brand) 12%, transparent), transparent 58%),
+      radial-gradient(circle, transparent 60%, color-mix(in oklab, var(--color-brand) 30%, transparent) 100%),
+      radial-gradient(circle, color-mix(in oklab, var(--fg) 40%, transparent) 0.8px, transparent 1.3px) 0 0 / 12px 12px;
+    box-shadow:
+      0 0 70px -8px color-mix(in oklab, var(--color-brand) 55%, transparent),
+      inset 0 0 0 1px color-mix(in oklab, var(--color-brand) 30%, transparent);
+  }
+  .route-comet {
+    stroke-dasharray: 0.24 1;
+    animation: route-comet 3.6s cubic-bezier(0.45, 0, 0.25, 1) infinite;
+  }
+  @keyframes route-comet {
+    from {
+      stroke-dashoffset: 0.24;
+    }
+    to {
+      stroke-dashoffset: -1;
+    }
+  }
 }
 
 /* Circular theme-switch reveal via the View Transitions API */
@@ -234,6 +331,7 @@
   *::before,
   *::after {
     animation-duration: 0.001ms !important;
+    animation-delay: 0s !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
   }

@@ -1,12 +1,44 @@
-import { useLayoutEffect, useRef } from "react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useEffect, useRef, useState } from "react";
 import { SOLUTIONS } from "../lib/data";
-import { scrollToTarget } from "../lib/scroll";
+import { loadGsap, scrollToTarget } from "../lib/scroll";
 import { ArrowUpRight, Truck } from "./ui/icons";
 import { RevealWords } from "./ui/primitives";
 
-gsap.registerPlugin(ScrollTrigger);
+const PIN_QUERY = "(min-width: 1024px) and (prefers-reduced-motion: no-preference)";
+
+/**
+ * Starts downloading only when the card is ~300px from the viewport. Native
+ * `loading="lazy"` fetches these right away (they sit just below the hero), which
+ * competes with the app's JavaScript for bandwidth on slow mobile connections.
+ */
+function NearImage({ src, className }) {
+  const ref = useRef(null);
+  const [near, setNear] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+  useEffect(() => {
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setNear(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: "300px" }
+    );
+    io.observe(ref.current);
+    return () => io.disconnect();
+  }, []);
+  return (
+    <img
+      ref={ref}
+      src={near ? src : undefined}
+      alt=""
+      decoding="async"
+      onLoad={() => setLoaded(true)}
+      className={`${className} ${loaded ? "opacity-100" : "opacity-0"}`}
+    />
+  );
+}
 
 export default function Showcase() {
   const section = useRef(null);
@@ -15,73 +47,93 @@ export default function Showcase() {
   const road = useRef(null);
   const counter = useRef(null);
 
-  useLayoutEffect(() => {
-    const mm = gsap.matchMedia();
+  // The horizontal pin only exists on large screens, so GSAP is fetched only there
+  // (or the first time the window grows past the breakpoint).
+  useEffect(() => {
+    const query = window.matchMedia(PIN_QUERY);
+    let mm = null;
+    let cancelled = false;
 
-    mm.add("(min-width: 1024px) and (prefers-reduced-motion: no-preference)", () => {
-      const distance = () => track.current.scrollWidth - window.innerWidth;
+    const init = async () => {
+      if (mm || cancelled) return;
+      const { gsap, ScrollTrigger } = await loadGsap();
+      if (mm || cancelled) return;
+      mm = gsap.matchMedia();
+      mm.add(PIN_QUERY, () => setupPin(gsap));
+      ScrollTrigger.refresh();
+    };
 
-      const tween = gsap.to(track.current, {
-        x: () => -distance(),
-        ease: "none",
-        scrollTrigger: {
-          trigger: section.current,
-          start: "top top",
-          end: () => `+=${distance()}`,
-          pin: true,
-          scrub: 0.8,
-          invalidateOnRefresh: true,
-          anticipatePin: 1,
-          onUpdate: (self) => {
-            const p = self.progress;
-            const roadWidth = road.current.offsetWidth - truck.current.offsetWidth;
-            gsap.set(truck.current, { x: p * roadWidth });
-            gsap.set(road.current.firstChild, { scaleX: p });
-            const idx = Math.min(SOLUTIONS.length, Math.max(1, Math.ceil(p * SOLUTIONS.length)));
-            counter.current.textContent = String(idx).padStart(2, "0");
-          },
-        },
-      });
+    if (query.matches) init();
+    else query.addEventListener("change", init);
 
-      gsap.utils.toArray(".sc-img", section.current).forEach((img) => {
-        gsap.fromTo(
-          img,
-          { xPercent: -5 },
-          {
-            xPercent: 5,
-            ease: "none",
-            scrollTrigger: {
-              trigger: img.parentElement,
-              containerAnimation: tween,
-              start: "left right",
-              end: "right left",
-              scrub: true,
-            },
-          }
-        );
-      });
-
-      gsap.utils.toArray(".sc-reveal", section.current).forEach((el) => {
-        gsap.from(el, {
-          yPercent: 110,
-          rotate: 3,
-          duration: 1.1,
-          ease: "expo.out",
-          scrollTrigger: {
-            trigger: el.closest(".sc-panel"),
-            containerAnimation: tween,
-            start: "left 75%",
-            toggleActions: "play none none reverse",
-          },
-        });
-      });
-    });
-
-    return () => mm.revert();
+    return () => {
+      cancelled = true;
+      query.removeEventListener("change", init);
+      mm?.revert();
+    };
   }, []);
 
+  function setupPin(gsap) {
+    const distance = () => track.current.scrollWidth - window.innerWidth;
+
+    const tween = gsap.to(track.current, {
+      x: () => -distance(),
+      ease: "none",
+      scrollTrigger: {
+        trigger: section.current,
+        start: "top top",
+        end: () => `+=${distance()}`,
+        pin: true,
+        scrub: 0.8,
+        invalidateOnRefresh: true,
+        anticipatePin: 1,
+        onUpdate: (self) => {
+          const p = self.progress;
+          const roadWidth = road.current.offsetWidth - truck.current.offsetWidth;
+          gsap.set(truck.current, { x: p * roadWidth });
+          gsap.set(road.current.firstChild, { scaleX: p });
+          const idx = Math.min(SOLUTIONS.length, Math.max(1, Math.ceil(p * SOLUTIONS.length)));
+          counter.current.textContent = String(idx).padStart(2, "0");
+        },
+      },
+    });
+
+    gsap.utils.toArray(".sc-img", section.current).forEach((img) => {
+      gsap.fromTo(
+        img,
+        { xPercent: -5 },
+        {
+          xPercent: 5,
+          ease: "none",
+          scrollTrigger: {
+            trigger: img.parentElement,
+            containerAnimation: tween,
+            start: "left right",
+            end: "right left",
+            scrub: true,
+          },
+        }
+      );
+    });
+
+    gsap.utils.toArray(".sc-reveal", section.current).forEach((el) => {
+      gsap.from(el, {
+        yPercent: 110,
+        rotate: 3,
+        duration: 1.1,
+        ease: "expo.out",
+        scrollTrigger: {
+          trigger: el.closest(".sc-panel"),
+          containerAnimation: tween,
+          start: "left 75%",
+          toggleActions: "play none none reverse",
+        },
+      });
+    });
+  }
+
   return (
-    <section id="solutions" ref={section} className="relative overflow-clip">
+    <section id="solutions" ref={section} className="cv-auto-mobile relative overflow-clip">
       <div
         ref={track}
         className="flex flex-col gap-10 px-[clamp(1rem,4vw,3rem)] py-16 lg:h-[100svh] lg:w-max lg:flex-row lg:items-center lg:gap-[3vw] lg:py-0"
@@ -112,12 +164,9 @@ export default function Showcase() {
               className="sc-panel group sticky top-(--stack) h-[78svh] w-full shrink-0 overflow-hidden rounded-[2rem] bg-ink text-paper lg:relative lg:top-0 lg:h-[74svh] lg:w-[min(72vw,1080px)]"
               style={{ "--stack": `calc(6rem + ${i * 14}px)` }}
             >
-              <img
+              <NearImage
                 src={s.image}
-                alt=""
-                loading="eager"
-                decoding="async"
-                className="sc-img absolute inset-0 h-full w-full scale-[1.12] object-cover transition-[filter] duration-700 group-hover:brightness-110"
+                className="sc-img absolute inset-0 h-full w-full scale-[1.12] object-cover transition-[filter,opacity] duration-700 group-hover:brightness-110"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-ink/10" />
               <div className="absolute inset-0 bg-gradient-to-r from-ink/70 to-transparent" />

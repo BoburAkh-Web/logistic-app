@@ -1,5 +1,4 @@
 import { useRef, useState } from "react";
-import emailjs from "@emailjs/browser";
 import { AnimatePresence, motion, useMotionValue, useSpring } from "motion/react";
 import { CONTACT } from "../lib/data";
 import { ArrowRight, ArrowUpRight, Check, Truck } from "./ui/icons";
@@ -121,6 +120,8 @@ export default function Contact() {
     e.preventDefault();
     setStatus("sending");
     try {
+      // Loaded on submit only — most visitors never send the form.
+      const { default: emailjs } = await import("@emailjs/browser");
       await emailjs.sendForm(EMAILJS.service, EMAILJS.template, form.current, {
         publicKey: EMAILJS.publicKey,
       });
@@ -134,7 +135,7 @@ export default function Contact() {
   };
 
   return (
-    <section id="contact" className="px-2 py-6 md:px-5 md:py-10">
+    <section id="contact" className="cv-auto px-2 py-6 md:px-5 md:py-10">
       <div
         ref={panel}
         onPointerMove={onMove}
@@ -174,7 +175,7 @@ export default function Contact() {
                         <MaskIcon src={c.icon} className="size-5 text-paper" />
                       </span>
                       <span className="min-w-0 flex-1">
-                        <span className="block font-mono text-[10px] uppercase tracking-[0.18em] text-paper/45">
+                        <span className="block font-mono text-[10px] uppercase tracking-[0.18em] text-paper/60">
                           {c.label}
                         </span>
                         <span className="mt-1 block text-base leading-snug wrap-anywhere transition-transform duration-500 group-hover:translate-x-1 sm:text-lg md:text-xl">

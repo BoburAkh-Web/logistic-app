@@ -36,8 +36,10 @@ function Manifesto() {
       {WORDS.map((w, i) => (
         <span
           key={i}
-          className={`transition-opacity duration-500 ${i < lit ? "opacity-100" : "opacity-15"} ${
-            ACCENT.has(w) ? "text-brand" : ""
+          // Unlit words stay at 50% (still ≥3:1 contrast for large text); accent words
+          // only take the brand colour once lit, since dimmed blue would fail contrast.
+          className={`transition-[opacity,color] duration-500 ${
+            i < lit ? (ACCENT.has(w) ? "text-brand" : "") : "opacity-50"
           }`}
         >
           {w}{" "}
@@ -234,7 +236,7 @@ function ValuesCard() {
 
 export default function About() {
   return (
-    <section id="about" className="relative py-20 md:py-40">
+    <section id="about" className="cv-auto relative py-20 md:py-40">
       <div className="container-x">
         <span className="eyebrow">(02) Why EZ Trans</span>
         <div className="mt-8">
