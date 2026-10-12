@@ -91,16 +91,19 @@ export default function Nav() {
 
   return (
     <>
-      <motion.header
-        className="fixed inset-x-0 top-0 z-50 px-3 pt-3 md:px-6 md:pt-5"
-        animate={{ y: hidden ? -120 : 0 }}
-        transition={{ duration: 0.6, ease: EASE_OUT }}
+      {/* Hide/show is a CSS transform transition (compositor), not a JS animation. */}
+      <header
+        className={`fixed inset-x-0 top-0 z-50 px-3 pt-3 transition-transform duration-500 ease-out-expo md:px-6 md:pt-5 ${
+          hidden ? "-translate-y-[120%]" : ""
+        }`}
       >
         <nav
           aria-label="Primary"
           className={`mx-auto flex max-w-6xl items-center justify-between gap-4 rounded-full border py-1.5 pl-4 pr-1.5 transition-all duration-500 sm:py-2 sm:pl-5 sm:pr-2 ${
             scrolled || open
-              ? "border-line bg-bg/85 shadow-[0_10px_40px_-12px_rgb(0_0_0/0.18)] backdrop-blur-md"
+              ? // No backdrop blur on phones: re-blurring the content scrolling underneath
+                // a fixed bar every frame is one of the most expensive things on mobile GPUs.
+                "border-line bg-bg/95 shadow-[0_10px_40px_-12px_rgb(0_0_0/0.18)] lg:bg-bg/85 lg:backdrop-blur-md"
               : "border-transparent bg-transparent"
           }`}
         >
@@ -167,7 +170,7 @@ export default function Nav() {
             </button>
           </div>
         </nav>
-      </motion.header>
+      </header>
 
       <AnimatePresence>
         {open && (

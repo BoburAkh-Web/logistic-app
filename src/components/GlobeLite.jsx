@@ -45,6 +45,10 @@ const ROUTES = CITIES.map((city) => {
   return { x, y, d: `M${f(hub[0])} ${f(hub[1])} Q${f(cx)} ${f(cy)} ${f(x)} ${f(y)}` };
 });
 
+// Pulses sit on the hub and a few destinations. They're HTML (not SVG) so their
+// transform/opacity animation runs on the compositor; the SVG itself never repaints.
+const PULSES = [hub, ...[1, 3, 4].map((i) => [ROUTES[i].x, ROUTES[i].y])];
+
 export default function GlobeLite({ className = "" }) {
   return (
     <div aria-hidden className={`relative ${className}`}>
@@ -52,31 +56,24 @@ export default function GlobeLite({ className = "" }) {
       <svg viewBox="0 0 100 100" className="absolute inset-0 size-full overflow-visible text-brand dark:text-brand-400">
         {ROUTES.map((r, i) => (
           <g key={i}>
-            <path d={r.d} pathLength="1" fill="none" stroke="currentColor" strokeWidth="0.25" opacity="0.25" />
-            <path
-              d={r.d}
-              pathLength="1"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="0.55"
-              strokeLinecap="round"
-              className="route-comet"
-              style={{ animationDuration: `${3.4 + (i % 3) * 0.6}s`, animationDelay: `-${i * 0.55}s` }}
-            />
+            <path d={r.d} fill="none" stroke="currentColor" strokeWidth="0.35" strokeLinecap="round" opacity="0.55" />
             <circle cx={r.x} cy={r.y} r="0.7" fill="currentColor" />
           </g>
         ))}
-        <circle
-          cx={hub[0]}
-          cy={hub[1]}
-          r="1.6"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="0.3"
-          className="animate-ping-slow origin-center [transform-box:fill-box]"
-        />
         <circle cx={hub[0]} cy={hub[1]} r="1.2" fill="currentColor" />
       </svg>
+      {PULSES.map(([x, y], i) => (
+        <span
+          key={i}
+          className="absolute -translate-1/2"
+          style={{ left: `${x}%`, top: `${y}%` }}
+        >
+          <span
+            className={`animate-ping-slow block rounded-full border border-brand dark:border-brand-400 ${i === 0 ? "size-4" : "size-2.5"}`}
+            style={{ animationDelay: `${i * 0.6}s` }}
+          />
+        </span>
+      ))}
     </div>
   );
 }

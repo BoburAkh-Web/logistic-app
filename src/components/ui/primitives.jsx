@@ -215,3 +215,23 @@ export function LiveClock({ className = "" }) {
   const time = useChicagoTime();
   return <span className={`tabular-nums ${className}`}>{time}</span>;
 }
+
+/**
+ * Media-query flag that is false on the server and on the first client render (so the
+ * prerendered HTML hydrates cleanly), then tracks the query.
+ */
+export function useMediaFlag(query) {
+  const [matches, setMatches] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia(query);
+    const update = () => setMatches(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, [query]);
+  return matches;
+}
+
+/** Desktop with a mouse and motion allowed — where scroll-linked JS effects are worth it. */
+export const DESKTOP_MOTION =
+  "(min-width: 1024px) and (pointer: fine) and (prefers-reduced-motion: no-preference)";

@@ -4,7 +4,15 @@ import { scrollToTarget } from "../lib/scroll";
 import { useTheme } from "../lib/theme";
 import GlobeLite from "./GlobeLite";
 import { ArrowRight, ArrowUpRight } from "./ui/icons";
-import { EASE_OUT, LiveClock, Magnetic, RevealWords, RollText } from "./ui/primitives";
+import {
+  DESKTOP_MOTION,
+  EASE_OUT,
+  LiveClock,
+  Magnetic,
+  RevealWords,
+  RollText,
+  useMediaFlag,
+} from "./ui/primitives";
 
 const Globe = lazy(() => import("./Globe"));
 
@@ -60,6 +68,9 @@ export default function Hero() {
   const contentY = useTransform(scrollYProgress, [0, 1], [0, -120]);
   const contentOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
   const globeY = useTransform(scrollYProgress, [0, 1], [0, 160]);
+  // Scroll-linked parallax only on desktop. On phones JS-driven transforms trail the
+  // compositor-driven touch scroll by a frame, which reads as stutter.
+  const parallax = useMediaFlag(DESKTOP_MOTION);
 
   return (
     <section
@@ -76,8 +87,8 @@ export default function Hero() {
       </div>
 
       <motion.div
-        style={{ y: globeY }}
-        className="pointer-events-none absolute left-1/2 top-[58%] aspect-square w-[150vw] -translate-x-1/2 opacity-50 sm:top-[52%] sm:w-[115vw] sm:opacity-60 md:opacity-80 lg:left-auto lg:right-[-14vw] lg:top-[-2vh] lg:w-[min(68vw,1100px)] lg:translate-x-0 lg:opacity-100"
+        style={parallax ? { y: globeY } : undefined}
+        className="pointer-events-none absolute left-1/2 top-[58%] aspect-square lg:will-change-transform w-[150vw] -translate-x-1/2 opacity-50 sm:top-[52%] sm:w-[115vw] sm:opacity-60 md:opacity-80 lg:left-auto lg:right-[-14vw] lg:top-[-2vh] lg:w-[min(68vw,1100px)] lg:translate-x-0 lg:opacity-100"
       >
         {/* Fade lives on a wrapper: the entrance animation's fill would pin opacity. */}
         <div className={`size-full transition-opacity duration-1000 ${webglReady ? "opacity-0" : ""}`}>
@@ -102,8 +113,8 @@ export default function Hero() {
       </motion.div>
 
       <motion.div
-        style={{ y: contentY, opacity: contentOpacity }}
-        className="container-x relative z-10 flex flex-1 flex-col"
+        style={parallax ? { y: contentY, opacity: contentOpacity } : undefined}
+        className="container-x relative z-10 flex flex-1 flex-col lg:will-change-transform"
       >
         <div className="enter-up mb-8 md:mb-10" style={enter(0.03)}>
           <span className="inline-flex items-center gap-2 rounded-full border border-line bg-bg/85 py-1.5 pl-2 pr-3 text-[11px] sm:gap-3 sm:pr-4 sm:text-xs">

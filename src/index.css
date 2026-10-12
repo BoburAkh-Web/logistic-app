@@ -305,16 +305,25 @@
       0 0 70px -8px color-mix(in oklab, var(--color-brand) 55%, transparent),
       inset 0 0 0 1px color-mix(in oklab, var(--color-brand) 30%, transparent);
   }
-  .route-comet {
-    stroke-dasharray: 0.24 1;
-    animation: route-comet 3.6s cubic-bezier(0.45, 0, 0.25, 1) infinite;
+  /* Marquee bands on touch devices: transform-only keyframes run on the compositor. */
+  .marquee-track {
+    animation: marquee-quarter 30s linear infinite;
+    will-change: transform;
   }
-  @keyframes route-comet {
+  @keyframes marquee-quarter {
     from {
-      stroke-dashoffset: 0.24;
+      transform: translateX(0);
     }
     to {
-      stroke-dashoffset: -1;
+      transform: translateX(-25%);
+    }
+  }
+
+  /* Film grain is a full-screen layer the GPU must blend on every scrolled frame —
+     not worth it on phones and tablets, where it's barely visible anyway. */
+  @media (pointer: coarse), (max-width: 1023px) {
+    .grain {
+      display: none;
     }
   }
 }
