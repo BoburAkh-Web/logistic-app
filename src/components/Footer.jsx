@@ -30,7 +30,7 @@ function Wordmark() {
           >
             {ch}
           </motion.span>
-        )
+        ),
       )}
     </div>
   );
@@ -63,8 +63,8 @@ export default function Footer() {
             <div>
               <Logo className="h-10 md:h-12" />
               <p className="mt-5 max-w-sm text-muted md:mt-6">
-                Your top-notch expedited service provider. The right equipment, at the
-                right place, at the right time. Always.
+                Your top-notch expedited service provider. The right equipment,
+                at the right place, at the right time. Always.
               </p>
             </div>
             {/* On phones/tablets the back-to-top button sits beside the brand block. */}
@@ -74,7 +74,9 @@ export default function Footer() {
           </div>
 
           <nav aria-label="Footer">
-            <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">Explore</p>
+            <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">
+              Explore
+            </p>
             <ul className="mt-4 flex flex-wrap gap-x-6 gap-y-2 md:mt-5 md:block md:space-y-2">
               {NAV_LINKS.map((l) => (
                 <li key={l.href}>
@@ -94,7 +96,9 @@ export default function Footer() {
           </nav>
 
           <div className="min-w-0">
-            <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">Reach us</p>
+            <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">
+              Reach us
+            </p>
             <ul className="mt-4 space-y-2 text-base md:mt-5 md:text-lg">
               <li>
                 <a href={CONTACT.phoneHref} className="group inline-flex">
@@ -102,11 +106,16 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href={`mailto:${CONTACT.email}`} className="group inline-flex max-w-full">
+                <a
+                  href={`mailto:${CONTACT.email}`}
+                  className="group inline-flex max-w-full"
+                >
                   <RollText>{CONTACT.email}</RollText>
                 </a>
               </li>
-              <li className="text-sm text-muted md:text-base">{CONTACT.address}</li>
+              <li className="text-sm text-muted md:text-base">
+                {CONTACT.address}
+              </li>
             </ul>
           </div>
 
@@ -117,7 +126,9 @@ export default function Footer() {
 
         <div className="flex flex-col gap-2.5 py-6 font-mono text-[10px] uppercase tracking-[0.14em] text-muted sm:text-[11px] md:flex-row md:items-center md:justify-between md:gap-3">
           {/* Year is baked in at build time; tolerate a mismatch across New Year. */}
-          <p suppressHydrationWarning>© {year} EZ Trans Group. All rights reserved.</p>
+          <p suppressHydrationWarning>
+            © {year} EZ Trans Group. All rights reserved.
+          </p>
           <p className="flex items-center gap-2">
             <span className="size-1.5 rounded-full bg-emerald-500" />
             Open 24/7/365 · Wheeling, IL <LiveClock />
@@ -128,7 +139,7 @@ export default function Footer() {
             rel="noreferrer"
             className="underline-offset-4 transition-colors hover:text-fg hover:underline"
           >
-            Created by Murad · updated by Bobur
+            Created by software engineer
           </a>
         </div>
       </div>
